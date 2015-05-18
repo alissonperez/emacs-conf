@@ -3,16 +3,16 @@
 ;;; Code:
 
 
-;;;### (autoloads nil "monokai-theme" "monokai-theme.el" (21849 12000
-;;;;;;  653050 348000))
+;;;### (autoloads nil "monokai-theme" "monokai-theme.el" (21849 16243
+;;;;;;  941147 72000))
 ;;; Generated autoloads from monokai-theme.el
 
 (when (and (boundp 'custom-theme-load-path) load-file-name) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
 
 ;;;***
 
-;;;### (autoloads nil nil ("monokai-theme-pkg.el") (21849 12000 751915
-;;;;;;  860000))
+;;;### (autoloads nil nil ("monokai-theme-pkg.el") (21849 16244 5382
+;;;;;;  743000))
 
 ;;;***
 
