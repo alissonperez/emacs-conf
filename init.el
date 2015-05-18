@@ -31,3 +31,5 @@
 
 (load-theme 'monokai t)
 
+(require 'ido)
+(ido-mode t)
