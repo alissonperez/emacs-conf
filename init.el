@@ -33,3 +33,7 @@
 
 (require 'ido)
 (ido-mode t)
+(setq ido-enable-flex-matching t)
+
+;; Duplicate line with C-c C-d
+(global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
