@@ -1,6 +1,7 @@
 (require 'package) ;; You might already have this line
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
+
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
@@ -29,16 +30,64 @@
  ;; If there is more than one, they won't work right.
  )
 
+;;===========================================================
+;; General shortcuts
+;;============================================================
+
+;; Duplicate line with C-c C-d
+(global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
+
+;;===========================================================
+;; Git gutter
+;;============================================================
+
+(require 'git-gutter)
+
+;; If you enable global minor mode
+(global-git-gutter-mode t)
+
+;; If you would like to use git-gutter.el and linum-mode
+(git-gutter:linum-setup)
+
+;; If you enable git-gutter-mode for some modes
+(add-hook 'ruby-mode-hook 'git-gutter-mode)
+
+(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+
+;; Jump to next/previous hunk
+(global-set-key (kbd "C-x p") 'git-gutter:previous-hunk)
+(global-set-key (kbd "C-x n") 'git-gutter:next-hunk)
+
+;; Stage current hunk
+(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+
+;; Revert current hunk
+(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+
+;;============================================================
+;; Appearance
+;;============================================================
+(global-hl-line-mode -1)
+(global-linum-mode -1)
+(blink-cursor-mode -1)
+
+;;===========================================================
+;; Projectile
+;;============================================================
+
+(projectile-global-mode t)
+(setq projectile-completion-system 'grizzl)
+
 (load-theme 'monokai t)
 
 (require 'ido)
 (ido-mode t)
 (setq ido-enable-flex-matching t)
 
-;; Duplicate line with C-c C-d
-(global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
-
-(projectile-global-mode)
+;;===========================================================
+;; Magit
+;;============================================================
 
 ;; Using with magit
 (global-set-key (kbd "C-x g") 'magit-status)
