@@ -71,6 +71,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (global-linum-mode t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;;===========================================================
 ;; General shortcuts
