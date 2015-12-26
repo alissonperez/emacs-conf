@@ -129,6 +129,14 @@
 (global-linum-mode -1)
 (blink-cursor-mode -1)
 
+;; Line numbers
+(global-linum-mode t)
+
+(use-package drag-stuff
+  :ensure t
+  :bind (("M-p" . drag-stuff-up)
+         ("M-n" . drag-stuff-down)))
+
 ;;===========================================================
 ;; Projectile
 ;;============================================================
@@ -205,38 +213,9 @@
 ;; Magit
 ;;============================================================
 
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
+
 ;; Using with magit
-(global-set-key (kbd "C-x g") 'magit-status)
-
-;;===========================================================
-;; Moving lines
-;;===========================================================
-
-(defun move-line (n)
-  "Move the current line up or down by N lines."
-  (interactive "p")
-  (setq col (current-column))
-  (beginning-of-line) (setq start (point))
-  (end-of-line) (forward-char) (setq end (point))
-  (let ((line-text (delete-and-extract-region start end)))
-    (forward-line n)
-    (insert line-text)
-    ;; restore point to original column in moved line
-    (forward-line -1)
-    (forward-char col)))
-
-(defun move-line-up (n)
-  "Move the current line up by N lines."
-  (interactive "p")
-  (move-line (if (null n) -1 (- n))))
-
-(defun move-line-down (n)
-  "Move the current line down by N lines."
-  (interactive "p")
-  (move-line (if (null n) 1 n)))
-
-(global-set-key [(meta ctrl p)] 'move-line-up)
-(global-set-key [(meta ctrl n)] 'move-line-down)
-
-;; Line numbers
-(global-linum-mode t)
+;; (global-set-key (kbd "C-x g") 'magit-status)
