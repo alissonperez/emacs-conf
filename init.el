@@ -133,14 +133,73 @@
 ;; Projectile
 ;;============================================================
 
-(projectile-global-mode t)
-(setq projectile-completion-system 'grizzl)
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-global-mode t)
+  :config
+  (use-package grizzl :ensure t)
+  (setq projectile-enable-caching t
+        projectile-use-git-grep t
+        projectile-switch-project-action 'projectile-dired
+        projectile-require-project-root nil
+        projectile-mode-line '(:eval (format " P[%s]" (projectile-project-name)))
+        projectile-completion-system 'grizzl
+        ;; projectile-completion-system 'helm
+        ;; projectile-completion-system 'ivy
+        ))
 
-(load-theme 'monokai t)
+;; ==================================================
+;; Ido
+;; ==================================================
 
-(require 'ido)
-(ido-mode t)
-(setq ido-enable-flex-matching t)
+(use-package ido
+  :ensure t
+  :init
+  (ido-mode t)
+  :config
+  (setq ido-enable-prefix nil
+        ido-enable-flex-matching t
+        ido-create-new-buffer 'always
+        ido-use-filename-at-point 'guess
+        ido-max-prospects 10
+        ido-default-file-method 'selected-window
+        ido-file-extensions-order '(".py")
+        ido-auto-merge-work-directories-length -1)
+  (add-to-list 'ido-ignore-files '(".DS_Store" ".pyc"))
+  (add-to-list 'ido-ignore-directories '("__pycache__", ".git"))
+
+  (use-package ido-vertical-mode
+    :ensure t
+    :init
+    (setq ido-vertical-decorations (list "\n➜ " "" "\n" "\n..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]" "\n" ""))
+    (ido-vertical-mode 1))
+
+  (use-package ido-ubiquitous
+    :ensure t
+    :init
+    (ido-ubiquitous-mode +1))
+
+  (use-package flx-ido
+    :ensure t
+    :init
+    (flx-ido-mode +1)))
+
+;; ==================================================
+;; Themes
+;; ==================================================
+
+;; (use-package solarized-theme :ensure t :init (load-theme 'solarized-dark :no-confirm))
+(use-package monokai-theme :ensure t :init (load-theme 'monokai :no-confirm))
+
+;; ==================================================
+;; Elpy
+;; ==================================================
+
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
 
 ;;===========================================================
 ;; Magit
