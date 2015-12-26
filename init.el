@@ -1,4 +1,5 @@
 (require 'package) ;; You might already have this line
+
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives
@@ -7,8 +8,21 @@
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+
 (package-initialize) ;; You might already have this line
-(elpy-enable)
+
+;; ==================================================
+;; use-package
+;; ==================================================
+
+(if (not (package-installed-p 'use-package))
+    (progn
+      (package-refresh-contents)
+      (package-install 'use-package)))
+
+(require 'use-package)
+
+;; ==================================================
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -110,6 +124,7 @@
 ;;============================================================
 ;; Appearance
 ;;============================================================
+
 (global-hl-line-mode -1)
 (global-linum-mode -1)
 (blink-cursor-mode -1)
