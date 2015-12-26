@@ -137,6 +137,12 @@
   :bind (("M-p" . drag-stuff-up)
          ("M-n" . drag-stuff-down)))
 
+(use-package expand-region
+  :ensure t
+  :bind (("C-M-SPC" . er/expand-region)
+         ("C-+" . er/contract-region))
+  )
+
 ;;===========================================================
 ;; Projectile
 ;;============================================================
