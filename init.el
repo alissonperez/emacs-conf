@@ -12,6 +12,26 @@
 (package-initialize) ;; You might already have this line
 
 ;; ==================================================
+;; Renaming files and buffers
+;; ==================================================
+
+;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+(defun rename-file-and-buffer (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive "sNew name: ")
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (if (not filename)
+        (message "Buffer '%s' is not visiting a file!" name)
+      (if (get-buffer new-name)
+          (message "A buffer named '%s' already exists!" new-name)
+        (progn
+          (rename-file name new-name 1)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil))))))
+
+;; ==================================================
 ;; use-package
 ;; ==================================================
 
@@ -92,6 +112,17 @@
 
 ;; Duplicate line with C-c C-d
 (global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
+
+;; "Save as" a buffer
+(global-set-key (kbd "C-x C-a") 'rename-file-and-buffer)
+
+;; ==================================================
+;; General config
+;; ==================================================
+
+;; Enable downcase shortcut (C-x C-l) and uppercase (C-x C-u)
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
 
 ;;===========================================================
 ;; Git gutter
