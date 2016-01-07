@@ -11,6 +11,15 @@
 
 (package-initialize) ;; You might already have this line
 
+
+;; After save hook example
+
+;; (defun make-html()
+;;  (shell-command ". /home/alisson.perez/.virtualenvs/djomd/bin/activate; cd /home/alisson.perez/Devel/django-reporting/docs/; make html")
+;;  )
+
+;; (add-hook 'after-save-hook 'make-html)
+
 ;; ==================================================
 ;; Renaming files and buffers
 ;; ==================================================
