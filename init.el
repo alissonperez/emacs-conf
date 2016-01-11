@@ -163,7 +163,7 @@
   :ensure t
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
-         ("C-c C-w" . mc/mark-all-words-like-this))
+         ("C-c C-w" . mc/mark-all-like-this))
   )
 
 ;;============================================================
