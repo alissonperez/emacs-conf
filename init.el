@@ -120,7 +120,7 @@
 ;;============================================================
 
 ;; Duplicate line with C-c C-d
-(global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
+(global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y\C-p\C-e")
 
 ;; "Save as" a buffer
 (global-set-key (kbd "C-x C-a") 'rename-file-and-buffer)
