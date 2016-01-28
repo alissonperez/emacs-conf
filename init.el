@@ -279,3 +279,10 @@
 
 ;; Using with magit
 ;; (global-set-key (kbd "C-x g") 'magit-status)
+
+;; ==========================================================
+;; ORG-MODE
+;; ==========================================================
+
+
+(setq org-cycle-emulate-tab 'whitestart)
