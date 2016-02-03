@@ -1,0 +1,10 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: patch
+# key: patch
+# --
+
+    def _patch(self, *args, **kwargs):
+        patcher = patch(*args, **kwargs)
+        thing = patcher.start()
+        self.addCleanup(patcher.stop)
+        return thing
