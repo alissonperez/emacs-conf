@@ -285,4 +285,18 @@
 ;; ==========================================================
 
 
+;; ==========================================================
+;; Evaluate lisp expressions and replace with result
+;; ==========================================================
+
+(defun replace-last-sexp ()
+    (interactive)
+    (let ((value (eval (preceding-sexp))))
+      (kill-sexp -1)
+      (insert (format "%S" value))))
+
+(global-set-key (kbd "C-c C-f") 'replace-last-sexp)
+
+;;===========================================================
+
 (setq org-cycle-emulate-tab 'whitestart)
