@@ -358,3 +358,14 @@
 
 ;; "Save as" a buffer
 (global-set-key (kbd "C-x C-a") 'rename-file-and-buffer)
+
+;; ==========================================================
+;; Golden Ratio
+;; ==========================================================
+
+(use-package golden-ratio                 ; Auto resize windows
+  :ensure t
+  :diminish golden-ratio-mode
+  :init
+  (golden-ratio-mode 1)
+  (setq golden-ratio-auto-scale t))
