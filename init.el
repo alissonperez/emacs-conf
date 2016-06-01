@@ -363,12 +363,13 @@
 ;; Golden Ratio
 ;; ==========================================================
 
-(use-package golden-ratio                 ; Auto resize windows
+(use-package golden-ratio
   :ensure t
   :diminish golden-ratio-mode
   :init
   (golden-ratio-mode 1)
-  (setq golden-ratio-auto-scale t))
+  (setq golden-ratio-adjust-factor .9
+	golden-ratio-wide-adjust-factor .9))
 
 ;; ==========================================================
 ;; Editor config
