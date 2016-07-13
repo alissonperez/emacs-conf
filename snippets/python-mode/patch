@@ -4,7 +4,7 @@
 # --
 
     def _patch(self, *args, **kwargs):
-        patcher = patch(*args, **kwargs)
+        patcher = mock.patch(*args, **kwargs)
         thing = patcher.start()
         self.addCleanup(patcher.stop)
         return thing
