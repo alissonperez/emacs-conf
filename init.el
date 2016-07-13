@@ -369,3 +369,12 @@
   :init
   (golden-ratio-mode 1)
   (setq golden-ratio-auto-scale t))
+
+;; ==========================================================
+;; Editor config
+;; ==========================================================
+
+(use-package editorconfig
+  :ensure t
+  :init
+  (add-hook 'prog-mode-hook 'editorconfig-mode))
