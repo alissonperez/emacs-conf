@@ -378,3 +378,12 @@
   :ensure t
   :init
   (add-hook 'prog-mode-hook 'editorconfig-mode))
+
+;; ==========================================================
+;; Indent-Guide
+;; ==========================================================
+
+(load-file "~/.emacs.d/indent-guide.el")
+(require 'indent-guide)
+(setq indent-guide-recursive t)
+(indent-guide-global-mode)
