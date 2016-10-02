@@ -129,6 +129,15 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
+;; y/n instead of yes/no
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Display continuous lines
+(setq-default truncate-lines nil)
+
+;; trucate even even when screen is split into multiple windows
+(setq-default truncate-partial-width-windows nil)
+
 ;;===========================================================
 ;; Git gutter
 ;;============================================================
@@ -211,6 +220,18 @@
         ;; projectile-completion-system 'helm
         ;; projectile-completion-system 'ivy
         ))
+
+;; ==================================================
+;; Smartparens
+;; ==================================================
+
+(use-package smartparens
+  :ensure t
+  :diminish smartparens-mode
+  :config
+  (progn
+    (require 'smartparens-config)
+    (smartparens-global-mode 1)))
 
 ;; ==================================================
 ;; Ido
