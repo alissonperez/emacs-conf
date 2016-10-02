@@ -1,5 +1,9 @@
 (require 'package) ;; You might already have this line
 
+;; ==================================================
+;; Package archives
+;; ==================================================
+
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives
@@ -11,14 +15,15 @@
 
 (package-initialize) ;; You might already have this line
 
+;; ==================================================
+;; use-package
+;; ==================================================
 
-;; After save hook example
-
-;; (defun make-html()
-;;  (shell-command ". /home/alisson.perez/.virtualenvs/djomd/bin/activate; cd /home/alisson.perez/Devel/django-reporting/docs/; make html")
-;;  )
-
-;; (add-hook 'after-save-hook 'make-html)
+(if (not (package-installed-p 'use-package))
+    (progn
+      (package-refresh-contents)
+      (package-install 'use-package)))
+(require 'use-package)
 
 ;; ==================================================
 ;; Renaming files and buffers
@@ -39,17 +44,6 @@
           (rename-buffer new-name)
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
-
-;; ==================================================
-;; use-package
-;; ==================================================
-
-(if (not (package-installed-p 'use-package))
-    (progn
-      (package-refresh-contents)
-      (package-install 'use-package)))
-
-(require 'use-package)
 
 ;; ==================================================
 
@@ -113,6 +107,18 @@
 
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+
+;; ==================================================
+;; Hooks
+;; ==================================================
+
+;; After save hook example
+
+;; (defun make-html()
+;;  (shell-command ". /home/alisson.perez/.virtualenvs/djomd/bin/activate; cd /home/alisson.perez/Devel/django-reporting/docs/; make html")
+;;  )
+;; (add-hook 'after-save-hook 'make-html)
+
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; ==================================================
@@ -354,7 +360,7 @@
 ;;============================================================
 
 ;; Duplicate line with C-c C-d
-(global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y\C-p\C-e")
+(global-set-key "\C-c\C-c" "\C-a\C- \C-n\M-w\C-y\C-p\C-e")
 
 ;; "Save as" a buffer
 (global-set-key (kbd "C-x C-a") 'rename-file-and-buffer)
@@ -381,3 +387,13 @@
   (add-hook 'prog-mode-hook (editorconfig-mode 1))
   (add-hook 'text-mode-hook (editorconfig-mode 1))
   )
+
+;; ==========================================================
+;; Indent-Guide
+;; ==========================================================
+
+(load-file "~/.emacs.d/indent-guide.el")
+(require 'indent-guide)
+(setq indent-guide-recursive t)
+(indent-guide-global-mode)
+>>>>>>> Reorganizes init.el settings
