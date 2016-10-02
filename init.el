@@ -1,5 +1,9 @@
 (require 'package) ;; You might already have this line
 
+;; Start in fullscreen mode
+(custom-set-variables
+ '(initial-frame-alist (quote ((fullscreen . maximized)))))
+
 ;; ==================================================
 ;; Package archives
 ;; ==================================================
