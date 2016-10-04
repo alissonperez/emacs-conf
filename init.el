@@ -421,4 +421,3 @@
 (require 'indent-guide)
 (setq indent-guide-recursive t)
 (indent-guide-global-mode)
->>>>>>> Reorganizes init.el settings
