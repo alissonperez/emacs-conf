@@ -430,3 +430,31 @@
 (require 'indent-guide)
 (setq indent-guide-recursive t)
 (indent-guide-global-mode)
+
+;; ==========================================================
+;; Ruby things...
+;; ==========================================================
+
+(setenv "PATH"
+      (concat
+       (getenv "HOME") "/.rbenv/shims:"
+       (getenv "HOME") "/.rbenv/bin:"
+       (getenv "PATH")))
+
+(setq exec-path
+      (cons (concat (getenv "HOME") "/.rbenv/shims")
+	    (cons (concat (getenv "HOME") "/.rbenv/bin") exec-path)))
+
+(use-package ruby-tools
+  :ensure t)
+
+(use-package rspec-mode
+  :ensure t
+  :config
+  (progn
+    (setq rspec-use-rake-flag nil)
+    (defadvice rspec-compile (around rspec-compile-around activate)
+      "Use BASH shell for running the specs because of ZSH issues."
+      (let ((shell-file-name "/bin/bash"))
+    	ad-do-it))
+    ))
