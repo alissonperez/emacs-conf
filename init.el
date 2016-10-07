@@ -450,7 +450,7 @@
 (use-package rubocop
   :ensure t
   :config
-  (add-hook 'ruby-mode-hook (rubocop-mode 1))
+  (add-hook 'ruby-mode-hook (rubocop-mode 1)))
 
 (use-package ruby-tools
   :ensure t)
