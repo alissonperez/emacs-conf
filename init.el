@@ -447,6 +447,11 @@
       (cons (concat (getenv "HOME") "/.rbenv/shims")
 	    (cons (concat (getenv "HOME") "/.rbenv/bin") exec-path)))
 
+(use-package rubocop
+  :ensure t
+  :config
+  (add-hook 'ruby-mode-hook (rubocop-mode 1))
+
 (use-package ruby-tools
   :ensure t)
 
