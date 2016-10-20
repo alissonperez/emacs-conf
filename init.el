@@ -11,6 +11,7 @@
  '(compilation-message-face (quote default))
  '(custom-enabled-themes (quote (manoj-dark)))
  '(custom-safe-themes t)
+ '(desktop-save-mode t)
  '(elpy-test-django-runner-command
    (quote
     ("python" "manage.py" "test" "--settings=e4l.settings.test" "--noinput")))
