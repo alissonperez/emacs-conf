@@ -448,13 +448,20 @@
 
 
 ;; ==========================================================
-;; Indent-Guide
+;; Auto complete
 ;; ==========================================================
 
-(load-file "~/.emacs.d/indent-guide.el")
-(require 'indent-guide)
-(setq indent-guide-recursive t)
-(indent-guide-global-mode)
+(use-package auto-complete
+  :ensure t
+  :config
+  (require 'auto-complete-config)
+  (add-to-list 'ac-dictionary-directories
+	       "~/.emacs.d/elpa/auto-complete-20160827.649/dict")
+  (ac-config-default)
+  (setq ac-ignore-case nil)
+  (add-to-list 'ac-modes 'enh-ruby-mode)
+  (add-to-list 'ac-modes 'web-mode))
+
 
 ;; ==========================================================
 ;; Ruby things...
