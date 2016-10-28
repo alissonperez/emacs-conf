@@ -524,3 +524,13 @@
   (add-hook 'prog-mode-hook (editorconfig-mode 1))
   (add-hook 'text-mode-hook (editorconfig-mode 1))
   )
+
+;; ==========================================================
+;; Dash at point
+;; ==========================================================
+
+(use-package dash-at-point
+  :ensure t
+  :config
+  (global-set-key "\C-cd" 'dash-at-point))
+
