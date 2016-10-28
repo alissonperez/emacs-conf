@@ -501,3 +501,16 @@
       (let ((shell-file-name "/bin/bash"))
     	ad-do-it))
     ))
+
+(use-package enh-ruby-mode
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist
+	       '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode)))
+
+(use-package robe
+  :ensure t
+  :init
+  (add-hook 'ruby-mode-hook 'robe-mode)
+  (add-hook 'robe-mode-hook 'ac-robe-setup))
+
