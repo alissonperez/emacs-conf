@@ -534,3 +534,13 @@
   :config
   (global-set-key "\C-cd" 'dash-at-point))
 
+;; ==========================================================
+;; Textmate minnor mode (https://melpa.org/#/textmate)
+;; ==========================================================
+
+(use-package textmate
+  :ensure t
+  :init
+  (textmate-mode)
+  :config
+  (global-set-key (kbd "M-RET") 'textmate-next-line))
