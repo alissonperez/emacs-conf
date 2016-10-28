@@ -432,15 +432,20 @@
 	golden-ratio-wide-adjust-factor .9))
 
 ;; ==========================================================
-;; Editor config
+;; highlight-indentation
 ;; ==========================================================
 
-(use-package editorconfig
+(use-package highlight-indentation
   :ensure t
   :init
-  (add-hook 'prog-mode-hook (editorconfig-mode 1))
-  (add-hook 'text-mode-hook (editorconfig-mode 1))
-  )
+  (add-hook 'enh-ruby-mode-hook
+	    (lambda () (highlight-indentation-current-column-mode)))
+  (add-hook 'enh-ruby-mode-hook
+	    (lambda () (highlight-indentation-mode)))
+  :config
+  (set-face-background 'highlight-indentation-face "#692C2C")
+  (set-face-background 'highlight-indentation-current-column-face "#850B0B"))
+
 
 ;; ==========================================================
 ;; Indent-Guide
