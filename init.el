@@ -486,7 +486,7 @@
 (use-package rubocop
   :ensure t
   :config
-  (add-hook 'ruby-mode-hook (rubocop-mode 1)))
+  (add-hook 'enh-ruby-mode-hook (rubocop-mode 1)))
 
 (use-package ruby-tools
   :ensure t)
@@ -511,7 +511,7 @@
 (use-package robe
   :ensure t
   :init
-  (add-hook 'ruby-mode-hook 'robe-mode)
+  (add-hook 'enh-ruby-mode-hook 'robe-mode)
   (add-hook 'robe-mode-hook 'ac-robe-setup))
 
 ;; ==========================================================
