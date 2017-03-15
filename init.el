@@ -1,62 +1,16 @@
 (require 'package) ;; You might already have this line
 
-;; Start in fullscreen mode
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
- '(compilation-message-face (quote default))
- '(custom-enabled-themes (quote (manoj-dark)))
- '(custom-safe-themes t)
  '(desktop-save-mode t)
- '(elpy-test-django-runner-command
-   (quote
-    ("python" "manage.py" "test" "--settings=e4l.settings.test" "--noinput")))
- '(elpy-test-runner (quote elpy-test-django-runner))
- '(fci-rule-color "#49483E")
- '(highlight-changes-colors ("#FD5FF0" "#AE81FF"))
- '(highlight-tail-colors
-   (("#49483E" . 0)
-    ("#67930F" . 20)
-    ("#349B8D" . 30)
-    ("#21889B" . 50)
-    ("#968B26" . 60)
-    ("#A45E0A" . 70)
-    ("#A41F99" . 85)
-    ("#49483E" . 100)))
  '(initial-frame-alist (quote ((fullscreen . maximized))))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (ruby-tools rbenv rspec-mode yaml-mode use-package smartparens projectile multiple-cursors monokai-theme material-theme magit ido-vertical-mode ido-ubiquitous grizzl golden-ratio git-gutter flx-ido expand-region elpy editorconfig drag-stuff ace-jump-mode)))
- '(pyvenv-workon "e4l")
- '(vc-annotate-background nil)
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#F92672")
-     (40 . "#CF4F1F")
-     (60 . "#C26C0F")
-     (80 . "#E6DB74")
-     (100 . "#AB8C00")
-     (120 . "#A18F00")
-     (140 . "#989200")
-     (160 . "#8E9500")
-     (180 . "#A6E22E")
-     (200 . "#729A1E")
-     (220 . "#609C3C")
-     (240 . "#4E9D5B")
-     (260 . "#3C9F79")
-     (280 . "#A1EFE4")
-     (300 . "#299BA6")
-     (320 . "#2896B5")
-     (340 . "#2790C3")
-     (360 . "#66D9EF"))))
- '(vc-annotate-very-old-color nil)
- '(weechat-color-list
-   (unspecified "#272822" "#49483E" "#A20C41" "#F92672" "#67930F" "#A6E22E" "#968B26" "#E6DB74" "#21889B" "#66D9EF" "#A41F99" "#FD5FF0" "#349B8D" "#A1EFE4" "#F8F8F2" "#F8F8F0")))
+    (apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point auto-complete ace-jump-mode))))
 
 ;; ==================================================
 ;; Package archives
@@ -104,18 +58,6 @@
           (set-buffer-modified-p nil))))))
 
 ;; ==================================================
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-
-;; ==================================================
 ;; Hooks
 ;; ==================================================
 
@@ -132,6 +74,17 @@
 ;; General config
 ;; ==================================================
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; Removes toolbar and scrollbar
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+
 ;; Enable downcase shortcut (C-x C-l) and uppercase (C-x C-u)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -140,31 +93,19 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Display continuous lines
-(setq-default truncate-lines nil)
+(setq-default truncate-lines 1)
 
 ;; trucate even even when screen is split into multiple windows
 (setq-default truncate-partial-width-windows nil)
 
 ;;===========================================================
-;; Git gutter
+;; Git gutter fringe
 ;;============================================================
 
-(use-package git-gutter
+(use-package git-gutter-fringe
   :ensure t
-  :bind (("C-c v =" . git-gutter:popup-hunk) ;; show hunk diff
-         ("C-c v p" . git-gutter:previous-hunk)
-         ("C-c v n" . git-gutter:next-hunk)
-         ("C-c v s" . git-gutter:stage-hunk)
-         ("C-c v r" . git-gutter:revert-hunk))
-  :diminish git-gutter-mode
   :init
   (global-git-gutter-mode t)
-  :config
-  (custom-set-variables
-   '(git-gutter:window-width 1)
-   '(git-gutter:modified-sign "●") ;; two space
-   '(git-gutter:added-sign "●")    ;; multiple character is OK
-   '(git-gutter:deleted-sign "●"))
   )
 
 ;;============================================================
@@ -183,7 +124,6 @@
 ;;============================================================
 
 (global-hl-line-mode -1)
-(global-linum-mode -1)
 (blink-cursor-mode -1)
 
 ;; Line numbers
@@ -209,7 +149,7 @@
   )
 
 ;; ==========================================================
-;; Others
+;; YAML-MODE
 ;; ==========================================================
 
 (use-package yaml-mode
@@ -310,9 +250,6 @@
   :ensure t
   :bind ("C-x g" . magit-status))
 
-;; Using with magit
-;; (global-set-key (kbd "C-x g") 'magit-status)
-
 ;; ==========================================================
 ;; ORG-MODE
 ;; ==========================================================
@@ -385,8 +322,6 @@
 	  (:eval (if (buffer-file-name)
 		     (sl/make-header)
 		   "%b")))))
-
-
 
 (add-hook 'buffer-list-update-hook
 	  'sl/display-header)
@@ -495,12 +430,12 @@
   :ensure t
   :config
   (progn
-    (setq rspec-use-rake-flag nil)
-    (defadvice rspec-compile (around rspec-compile-around activate)
-      "Use BASH shell for running the specs because of ZSH issues."
-      (let ((shell-file-name "/bin/bash"))
-    	ad-do-it))
-    ))
+    (setq rspec-use-rake-flag nil)))
+    ;; (defadvice rspec-compile (around rspec-compile-around activate)
+    ;;   "Use BASH shell for running the specs because of ZSH issues."
+    ;;   (let ((shell-file-name "/bin/bash"))
+    ;; 	ad-do-it))
+    ;; ))
 
 (use-package enh-ruby-mode
   :ensure t
@@ -531,10 +466,10 @@
 ;; Dash at point
 ;; ==========================================================
 
-(use-package dash-at-point
-  :ensure t
-  :config
-  (global-set-key "\C-cd" 'dash-at-point))
+;; (use-package dash-at-point
+;;   :ensure t
+;;   :config
+;;   (global-set-key "\C-cd" 'dash-at-point))
 
 ;; ==========================================================
 ;; Textmate minnor mode (https://melpa.org/#/textmate)
@@ -546,3 +481,19 @@
   (textmate-mode)
   :config
   (global-set-key (kbd "M-RET") 'textmate-next-line))
+
+;; ==========================================================
+;; Yasippet
+;; ==========================================================
+
+(use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode 1))
+
+;; ==========================================================
+;; API Blue print
+;; ==========================================================
+
+(use-package apib-mode
+  :ensure t)
