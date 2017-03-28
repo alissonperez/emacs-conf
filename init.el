@@ -98,6 +98,9 @@
 ;; trucate even even when screen is split into multiple windows
 (setq-default truncate-partial-width-windows nil)
 
+;; Delete selection when we type
+(delete-selection-mode 1)
+
 ;;===========================================================
 ;; Git gutter fringe
 ;;============================================================
