@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: rspec
+# key: rspec
+# --
+# -*- coding: utf-8 -*-
+# frozen_string_literal: true
+RSpec.describe $1 do
+  describe '${2:description}' do
+    $3
+  end
+end

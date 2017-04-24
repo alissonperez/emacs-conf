@@ -1,0 +1,20 @@
+# -*- mode: snippet -*-
+# name: rspec-hanami-actions
+# key: rspec-ha
+# --
+# frozen_string_literal: true
+require 'spec_helper'
+
+RSpec.describe Api::Controllers::${1:described_class} do
+  let(:action) \{ described_class.new \}
+  let(:params) \{ Hash[] \}
+
+  describe '#call' do
+    context '${2:success}' do
+      it '${3:returns status 200}' do
+        status, headers, body = action.call(params)
+	expect(status).to eq 200$4
+      end
+    end
+  end
+end
