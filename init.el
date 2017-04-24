@@ -10,7 +10,7 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point auto-complete ace-jump-mode))))
+    (flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point auto-complete ace-jump-mode))))
 
 ;; ==================================================
 ;; Package archives
@@ -491,8 +491,12 @@
 
 (use-package yasnippet
   :ensure t
+  :config
+    (yas-reload-all)
   :init
-  (yas-global-mode 1))
+    (add-hook 'prog-mode-hook #'yas-minor-mode)
+  :bind (("C-c C-n" . yas-expand)))
+    ;;(yas-global-mode 1))
 
 ;; ==========================================================
 ;; API Blue print
@@ -500,3 +504,45 @@
 
 (use-package apib-mode
   :ensure t)
+
+;; ==========================================================
+;; Org Bullets
+;; ==========================================================
+
+(use-package org-bullets
+  :ensure t)
+
+;; ==========================================================
+;; Exec path from shell (https://github.com/purcell/exec-path-from-shell)
+;; ==========================================================
+
+(use-package exec-path-from-shell
+  :ensure t
+  :init
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
+  )
+
+;; ==========================================================
+;; JS things...
+;; ==========================================================
+
+(use-package nodejs-repl
+  :ensure t)
+
+(use-package js2-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+  (setq js2-mode-show-parse-errors nil)
+  (setq js2-mode-show-strict-warnings nil))
+
+(use-package ac-js2
+  :ensure t
+  :init
+  (add-hook 'js2-mode-hook 'ac-js2-mode)
+  (add-hook 'js2-mode-hook 'skewer-mode))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
