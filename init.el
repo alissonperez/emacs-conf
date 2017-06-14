@@ -58,6 +58,15 @@
           (set-buffer-modified-p nil))))))
 
 ;; ==================================================
+;; Recent files
+;; ==================================================
+
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key "\C-x\ \C-g" 'recentf-open-files)
+
+;; ==================================================
 ;; Hooks
 ;; ==================================================
 
@@ -73,6 +82,9 @@
 ;; ==================================================
 ;; General config
 ;; ==================================================
+
+;; Show time at mode-line
+(display-time-mode 1)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
