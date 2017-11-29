@@ -562,3 +562,14 @@
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
+
+;; ==========================================================
+;; GO Things...
+;; ==========================================================
+
+;; Before safe hook to format
+(add-hook 'go-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'gofmt-before-save)
+            (setq tab-width 4)
+            (setq indent-tabs-mode 1)))
