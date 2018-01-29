@@ -14,7 +14,7 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point auto-complete ace-jump-mode))))
+    (magit-gh-pulls typescript-mode auto-complete groovy-mode go-mode helm-spotify flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point ace-jump-mode))))
 
 ;; ==================================================
 ;; Package archives
@@ -573,3 +573,12 @@
             (add-hook 'before-save-hook 'gofmt-before-save)
             (setq tab-width 4)
             (setq indent-tabs-mode 1)))
+
+;; =========================================================
+;; Magit GH Pull Request (open pull request on git directly with emacs)
+;; =========================================================
+
+(use-package magit-gh-pulls
+  :ensure t
+  :init
+  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
