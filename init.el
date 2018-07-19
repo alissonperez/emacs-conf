@@ -430,48 +430,48 @@
 ;; Ruby things...
 ;; ==========================================================
 
-(setenv "PATH"
-      (concat
-       (getenv "HOME") "/.rbenv/shims:"
-       (getenv "HOME") "/.rbenv/bin:"
-       (getenv "PATH")))
+;; (setenv "PATH"
+;;       (concat
+;;        (getenv "HOME") "/.rbenv/shims:"
+;;        (getenv "HOME") "/.rbenv/bin:"
+;;        (getenv "PATH")))
 
-(setq exec-path
-      (cons (concat (getenv "HOME") "/.rbenv/shims")
-	    (cons (concat (getenv "HOME") "/.rbenv/bin") exec-path)))
+;; (setq exec-path
+;;       (cons (concat (getenv "HOME") "/.rbenv/shims")
+;; 	    (cons (concat (getenv "HOME") "/.rbenv/bin") exec-path)))
 
-(use-package rubocop
-  :ensure t
-  :config
-  (add-hook 'enh-ruby-mode-hook (rubocop-mode 1)))
+;; (use-package rubocop
+;;   :ensure t
+;;   :config
+;;   (add-hook 'enh-ruby-mode-hook (rubocop-mode 1)))
 
-(use-package ruby-tools
-  :ensure t)
+;; (use-package ruby-tools
+;;   :ensure t)
 
-(use-package rspec-mode
-  :ensure t
-  :config
-  (progn
-    (setq rspec-use-rake-flag nil)))
-    ;; (defadvice rspec-compile (around rspec-compile-around activate)
-    ;;   "Use BASH shell for running the specs because of ZSH issues."
-    ;;   (let ((shell-file-name "/bin/bash"))
-    ;; 	ad-do-it))
-    ;; ))
+;; (use-package rspec-mode
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (setq rspec-use-rake-flag nil)))
+;;     ;; (defadvice rspec-compile (around rspec-compile-around activate)
+;;     ;;   "Use BASH shell for running the specs because of ZSH issues."
+;;     ;;   (let ((shell-file-name "/bin/bash"))
+;;     ;; 	ad-do-it))
+;;     ;; ))
 
-(use-package enh-ruby-mode
-  :ensure t
-  :config
-  (setq enh-ruby-deep-indent-paren nil)
-  :init
-  (add-to-list 'auto-mode-alist
-	       '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode)))
+;; (use-package enh-ruby-mode
+;;   :ensure t
+;;   :config
+;;   (setq enh-ruby-deep-indent-paren nil)
+;;   :init
+;;   (add-to-list 'auto-mode-alist
+;; 	       '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode)))
 
-(use-package robe
-  :ensure t
-  :init
-  (add-hook 'enh-ruby-mode-hook 'robe-mode)
-  (add-hook 'robe-mode-hook 'ac-robe-setup))
+;; (use-package robe
+;;   :ensure t
+;;   :init
+;;   (add-hook 'enh-ruby-mode-hook 'robe-mode)
+;;   (add-hook 'robe-mode-hook 'ac-robe-setup))
 
 ;; ==========================================================
 ;; Editor config
