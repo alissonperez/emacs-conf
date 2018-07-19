@@ -117,6 +117,9 @@
 ;; Delete selection when we type
 (delete-selection-mode 1)
 
+;; Disable anoying alarm bell for errors (arrrgg..! =S)
+(setq ring-bell-function 'ignore)
+
 ;;===========================================================
 ;; Git gutter fringe
 ;;============================================================
