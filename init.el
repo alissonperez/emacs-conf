@@ -14,7 +14,7 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (magit-gh-pulls typescript-mode auto-complete groovy-mode go-mode helm-spotify flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point ace-jump-mode))))
+    (ido-completing-read+ js2-mode magit-gh-pulls typescript-mode auto-complete groovy-mode go-mode helm-spotify flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point ace-jump-mode))))
 
 ;; ==================================================
 ;; Package archives
@@ -183,6 +183,9 @@
 ;; Projectile
 ;;============================================================
 
+;; Need to be "setted" before load projectile
+(setq projectile-keymap-prefix (kbd "C-c p"))
+
 (use-package projectile
   :ensure t
   :init
@@ -237,7 +240,7 @@
     (setq ido-vertical-decorations (list "\n➜ " "" "\n" "\n..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]" "\n" ""))
     (ido-vertical-mode 1))
 
-  (use-package ido-ubiquitous
+  (use-package ido-completing-read+
     :ensure t
     :init
     (ido-ubiquitous-mode +1))
