@@ -517,7 +517,7 @@
     (yas-reload-all)
   :init
     (add-hook 'prog-mode-hook #'yas-minor-mode)
-  :bind (("C-c C-n" . yas-expand)))
+  :bind (("C-c C-h" . yas-expand)))
     ;;(yas-global-mode 1))
 
 ;; ==========================================================
