@@ -588,3 +588,11 @@
   :ensure t
   :init
   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
+
+
+;; =========================================================
+;; Groovy mode (using to edit files like Jenkinsfile)
+;; =========================================================
+
+(use-package groovy-mode
+  :ensure t)
