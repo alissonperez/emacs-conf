@@ -14,7 +14,7 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (ido-completing-read+ js2-mode magit-gh-pulls typescript-mode auto-complete groovy-mode go-mode helm-spotify flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point ace-jump-mode))))
+    (dockerfile-mode ido-completing-read+ js2-mode magit-gh-pulls typescript-mode auto-complete groovy-mode go-mode helm-spotify flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point ace-jump-mode))))
 
 ;; ==================================================
 ;; Package archives
@@ -589,10 +589,16 @@
   :init
   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 
-
 ;; =========================================================
 ;; Groovy mode (using to edit files like Jenkinsfile)
 ;; =========================================================
 
 (use-package groovy-mode
+  :ensure t)
+
+;; =========================================================
+;; Dockerfile mode
+;; =========================================================
+
+(use-package dockerfile-mode
   :ensure t)
