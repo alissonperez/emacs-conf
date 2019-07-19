@@ -564,12 +564,6 @@ There are two things you can do about this warning:
   (setq js2-mode-show-parse-errors nil)
   (setq js2-mode-show-strict-warnings nil))
 
-(use-package ac-js2
-  :ensure t
-  :init
-  (add-hook 'js2-mode-hook 'ac-js2-mode)
-  (add-hook 'js2-mode-hook 'skewer-mode))
-
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
