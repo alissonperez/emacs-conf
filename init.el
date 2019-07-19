@@ -71,10 +71,10 @@ There are two things you can do about this warning:
 ;; Recent files
 ;; ==================================================
 
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(global-set-key "\C-x\ \C-g" 'recentf-open-files)
+;; (require 'recentf)
+;; (recentf-mode 1)
+;; (setq recentf-max-menu-items 25)
+;; (global-set-key "\C-x\ \C-g" 'recentf-open-files)
 
 ;; ==================================================
 ;; Hooks
