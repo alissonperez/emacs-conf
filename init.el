@@ -197,13 +197,12 @@ There are two things you can do about this warning:
   :init
   (projectile-global-mode t)
   :config
-  (use-package grizzl :ensure t)
   (setq projectile-enable-caching t
         projectile-use-git-grep t
         projectile-switch-project-action 'projectile-dired
         projectile-require-project-root nil
         projectile-mode-line '(:eval (format " P[%s]" (projectile-project-name)))
-        projectile-completion-system 'grizzl
+        ;; projectile-completion-system 'grizzl
         ;; projectile-completion-system 'helm
         ;; projectile-completion-system 'ivy
         ))
