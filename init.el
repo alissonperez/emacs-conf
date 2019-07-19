@@ -1,4 +1,23 @@
-(require 'package) ;; You might already have this line
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  (when no-ssl
+    (warn "\
+Your version of Emacs does not support SSL connections,
+which is unsafe because it allows man-in-the-middle attacks.
+There are two things you can do about this warning:
+1. Install an Emacs version that does support SSL and be safe.
+2. Remove this warning from your init file so you won't see it again."))
+  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
+  ;; (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+  (when (< emacs-major-version 24)
+    ;; For important compatibility libraries like cl-lib
+    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
+
+(add-to-list 'package-archives
+             '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 
 ;; Better scroll
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
@@ -14,22 +33,9 @@
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (dockerfile-mode ido-completing-read+ js2-mode magit-gh-pulls typescript-mode auto-complete groovy-mode go-mode helm-spotify flycheck ac-js2 tern-auto-complete tern js3-mode nodejs-repl exec-path-from-shell tern-mode org-bullets neotree apib-mode git-gutter-fringe solarized-theme monokai-theme yaml-mode use-package textmate smartparens ruby-tools rubocop rspec-mode robe rbenv protobuf-mode projectile multiple-cursors material-theme magit ido-vertical-mode ido-ubiquitous grizzl gradle-mode golden-ratio flx-ido expand-region enh-ruby-mode elpy editorconfig drag-stuff dash-at-point ace-jump-mode))))
+    (magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))))
 
-;; ==================================================
-;; Package archives
-;; ==================================================
-
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives
-             '("elpy" . "https://jorgenschaefer.github.io/packages/"))
-
-(when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-
-(package-initialize) ;; You might already have this line
+(package-initialize)
 
 ;; ==================================================
 ;; use-package
