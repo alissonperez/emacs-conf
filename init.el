@@ -583,10 +583,10 @@ There are two things you can do about this warning:
 ;; Magit GH Pull Request (open pull request on git directly with emacs)
 ;; =========================================================
 
-(use-package magit-gh-pulls
-  :ensure t
-  :init
-  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
+;; (use-package magit-gh-pulls
+;;  :ensure t
+;;  :init
+;;  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 
 ;; =========================================================
 ;; Groovy mode (using to edit files like Jenkinsfile)
