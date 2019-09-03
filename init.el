@@ -33,9 +33,18 @@ There are two things you can do about this warning:
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))))
+    (go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package)))
+ '(python-shell-exec-path nil)
+ '(pyvenv-exec-shell "/bin/zsh")
+ '(pyvenv-tracking-ask-before-change t))
 
 (package-initialize)
+
+;; ==================================================
+;; Env vars
+;; ==================================================
+
+(setenv "WORKON_HOME" (concat (getenv "HOME") "/.local/share/virtualenvs/"))
 
 ;; ==================================================
 ;; use-package
@@ -438,12 +447,6 @@ There are two things you can do about this warning:
 ;; Ruby things...
 ;; ==========================================================
 
-;; (setenv "PATH"
-;;       (concat
-;;        (getenv "HOME") "/.rbenv/shims:"
-;;        (getenv "HOME") "/.rbenv/bin:"
-;;        (getenv "PATH")))
-
 ;; (setq exec-path
 ;;       (cons (concat (getenv "HOME") "/.rbenv/shims")
 ;; 	    (cons (concat (getenv "HOME") "/.rbenv/bin") exec-path)))
@@ -601,3 +604,15 @@ There are two things you can do about this warning:
 
 (use-package dockerfile-mode
   :ensure t)
+
+;; =========================================================
+;; Pipenv
+;; =========================================================
+
+(use-package pipenv
+  :hook (python-mode . pipenv-mode)
+  :init
+  (setq
+   pipenv-projectile-after-switch-function
+   'pipenv-projectile-after-switch-extended))
+(put 'set-goal-column 'disabled nil)
