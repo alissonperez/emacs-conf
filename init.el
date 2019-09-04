@@ -116,6 +116,9 @@ There are two things you can do about this warning:
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
+;; Disable scroll all mode (scroll all opened buffers at same time), it's causing a screen blink
+(scroll-all-mode -1)
+
 ;; Enable downcase shortcut (C-x C-l) and uppercase (C-x C-u)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
