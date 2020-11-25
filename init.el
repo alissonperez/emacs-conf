@@ -619,3 +619,13 @@ There are two things you can do about this warning:
    pipenv-projectile-after-switch-function
    'pipenv-projectile-after-switch-extended))
 (put 'set-goal-column 'disabled nil)
+
+;; =========================================================
+;; vue-mode
+;; =========================================================
+
+(use-package vue-mode
+  :mode "\\.vue$"
+  :config
+  (add-to-list 'mmm-save-local-variables '(syntax-ppss-table buffer)))
+
