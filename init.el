@@ -629,3 +629,9 @@ There are two things you can do about this warning:
   :config
   (add-to-list 'mmm-save-local-variables '(syntax-ppss-table buffer)))
 
+;; ==================================================
+;; Macros
+;; ==================================================
+
+(fset 'single_quotes
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217765 34 return 39 return 33] 0 "%d")) arg)))!
