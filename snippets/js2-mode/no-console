@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: no-console-eslint-disable
+# key: no-cons
+# --
+
+// eslint-disable-next-line no-console

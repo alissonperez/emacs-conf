@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: test review
+# key: teste_
+# --
+* Teste
+
+Veredito:
+
+** Para abordar na entrevista
+
+** Positivos
+
+- $1
+
+** Negativos
+
+-
