@@ -30,15 +30,19 @@ There are two things you can do about this warning:
  ;; If there is more than one, they won't work right.
  '(desktop-save-mode t)
  '(initial-frame-alist (quote ((fullscreen . maximized))))
+ '(magit-commit-arguments (quote ("--gpg-sign=28598CE33451C37E")))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package)))
+    (monokai-theme format-sql sqlformat rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package)))
  '(python-shell-exec-path nil)
  '(pyvenv-exec-shell "/bin/zsh")
  '(pyvenv-tracking-ask-before-change t))
 
 (package-initialize)
+
+(put 'set-goal-column 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 ;; ==================================================
 ;; Env vars
@@ -75,6 +79,16 @@ There are two things you can do about this warning:
           (rename-buffer new-name)
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
+
+;; ==================================================
+;; Convert camel case to underscore
+;; ==================================================
+
+(defun camel-to-snake () (interactive)
+       "Convert camel case to underscore case"
+       (progn
+	 (replace-regexp "\\([A-Z]\\)" "_\\1" nil (region-beginning) (region-end))
+	 (downcase-region (region-beginning) (region-end))))
 
 ;; ==================================================
 ;; Recent files
@@ -526,10 +540,10 @@ There are two things you can do about this warning:
   :ensure t
   :config
     (yas-reload-all)
+    (yas-global-mode 1)
   :init
     (add-hook 'prog-mode-hook #'yas-minor-mode)
-  :bind (("C-c C-h" . yas-expand)))
-    ;;(yas-global-mode 1))
+    :bind (("C-c C-h" . yas-expand)))
 
 ;; ==========================================================
 ;; API Blue print
@@ -618,7 +632,13 @@ There are two things you can do about this warning:
   (setq
    pipenv-projectile-after-switch-function
    'pipenv-projectile-after-switch-extended))
-(put 'set-goal-column 'disabled nil)
+
+;; =========================================================
+;; Tabnine
+;; =========================================================
+
+(use-package company-tabnine :ensure t)
+
 
 ;; =========================================================
 ;; vue-mode
@@ -634,4 +654,4 @@ There are two things you can do about this warning:
 ;; ==================================================
 
 (fset 'single_quotes
-   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217765 34 return 39 return 33] 0 "%d")) arg)))!
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217765 34 return 39 return 33] 0 "%d")) arg)))
