@@ -29,12 +29,11 @@ There are two things you can do about this warning:
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(desktop-save-mode t)
- '(initial-frame-alist (quote ((fullscreen . maximized))))
- '(magit-commit-arguments (quote ("--gpg-sign=28598CE33451C37E")))
+ '(initial-frame-alist '((fullscreen . maximized)))
+ '(magit-commit-arguments '("--gpg-sign=CFB7E671F19D034F"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
-   (quote
-    (monokai-theme format-sql sqlformat rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package)))
+   '(zoom undo-tree monokai-theme format-sql sqlformat rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))
  '(python-shell-exec-path nil)
  '(pyvenv-exec-shell "/bin/zsh")
  '(pyvenv-tracking-ask-before-change t))
@@ -161,6 +160,13 @@ There are two things you can do about this warning:
   :init
   (global-git-gutter-mode t)
   )
+
+;;===========================================================
+;; Undo tree (https://www.emacswiki.org/emacs/UndoTree)
+;;============================================================
+
+(use-package undo-tree
+  :ensure t)
 
 ;;============================================================
 ;; Multiple Cursors
@@ -411,16 +417,33 @@ There are two things you can do about this warning:
 (global-set-key (kbd "C-x C-a") 'rename-file-and-buffer)
 
 ;; ==========================================================
-;; Golden Ratio
+;; Golden Ratio / Zoom package
 ;; ==========================================================
 
-(use-package golden-ratio
+;; Zoom docs: https://github.com/cyrus-and/zoom
+
+(defun size-callback ()
+  (cond ((> (frame-pixel-width) 1280) '(120 . 0.75))
+        (t                            '(0.5 . 0.5))))
+
+(use-package zoom
   :ensure t
-  :diminish golden-ratio-mode
   :init
-  (golden-ratio-mode 1)
-  (setq golden-ratio-adjust-factor .9
-	golden-ratio-wide-adjust-factor .9))
+  (custom-set-variables '(zoom-mode t))
+  (custom-set-variables
+   '(zoom-size '(0.618 . 0.618)))
+  (custom-set-variables
+   '(zoom-size 'size-callback))
+  )
+
+;; Disable to try Zoom package
+;; (use-package golden-ratio
+;;   :ensure t
+;;   :diminish golden-ratio-mode
+;;   :init
+;;   (golden-ratio-mode 1)
+;;   (setq golden-ratio-adjust-factor .9
+;; 	golden-ratio-wide-adjust-factor .9))
 
 ;; ==========================================================
 ;; highlight-indentation
@@ -637,7 +660,7 @@ There are two things you can do about this warning:
 ;; Tabnine
 ;; =========================================================
 
-(use-package company-tabnine :ensure t)
+;; (use-package company-tabnine :ensure t)
 
 
 ;; =========================================================
