@@ -678,3 +678,11 @@ There are two things you can do about this warning:
 
 (fset 'single_quotes
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217765 34 return 39 return 33] 0 "%d")) arg)))
+
+;; ==================================================
+;; Using arrows to move over buffers (built-in feature)
+;;   https://www.emacswiki.org/emacs/WindMove
+;; ==================================================
+
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
