@@ -1,4 +1,8 @@
 (require 'package)
+
+;; Load path to load third party libs
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/packs"))
+
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
        (proto (if no-ssl "http" "https")))
