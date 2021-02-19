@@ -690,3 +690,22 @@ There are two things you can do about this warning:
 
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
+
+;; ==================================================
+;; Add dired-subtree
+;; https://github.com/Fuco1/dired-hacks
+;; ==================================================
+
+(use-package dired-subtree
+  :config
+  (define-key dired-mode-map "i" 'dired-subtree-insert)
+  (define-key dired-mode-map ";" 'dired-subtree-remove))
+
+;; ==================================================
+;; Add direx
+;; https://github.com/emacsorphanage/direx
+;; ==================================================
+
+(use-package direx
+  :config
+  (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory))
