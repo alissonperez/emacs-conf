@@ -40,7 +40,9 @@ There are two things you can do about this warning:
    '(zoom undo-tree monokai-theme format-sql sqlformat rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))
  '(python-shell-exec-path nil)
  '(pyvenv-exec-shell "/bin/zsh")
- '(pyvenv-tracking-ask-before-change t))
+ '(pyvenv-tracking-ask-before-change t)
+ '(zoom-mode t nil (zoom))
+ '(zoom-size 'size-callback))
 
 (package-initialize)
 
@@ -625,6 +627,9 @@ There are two things you can do about this warning:
             (add-hook 'before-save-hook 'gofmt-before-save)
             (setq tab-width 4)
             (setq indent-tabs-mode 1)))
+
+(use-package go-mode
+  :ensure t)
 
 ;; =========================================================
 ;; Magit GH Pull Request (open pull request on git directly with emacs)
