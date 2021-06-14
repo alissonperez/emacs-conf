@@ -34,10 +34,10 @@ There are two things you can do about this warning:
  ;; If there is more than one, they won't work right.
  '(desktop-save-mode t)
  '(initial-frame-alist '((fullscreen . maximized)))
- '(magit-commit-arguments '("--gpg-sign=CFB7E671F19D034F"))
+ '(magit-commit-arguments '("--gpg-sign=A41BF0ECF08B6764"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
-   '(zoom undo-tree monokai-theme format-sql sqlformat rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))
+   '(typescript-mode zoom undo-tree monokai-theme format-sql sqlformat rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))
  '(python-shell-exec-path nil)
  '(pyvenv-exec-shell "/bin/zsh")
  '(pyvenv-tracking-ask-before-change t)
@@ -595,9 +595,7 @@ There are two things you can do about this warning:
 (use-package exec-path-from-shell
   :ensure t
   :init
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
-  )
+  (exec-path-from-shell-initialize))
 
 ;; ==========================================================
 ;; JS things...
