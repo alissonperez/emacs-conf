@@ -616,6 +616,15 @@ There are two things you can do about this warning:
   :init (global-flycheck-mode))
 
 ;; ==========================================================
+;; Typescript
+;; ==========================================================
+
+(use-package typescript-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode)))
+
+;; ==========================================================
 ;; GO Things...
 ;; ==========================================================
 
