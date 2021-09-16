@@ -47,6 +47,8 @@ There are two things you can do about this warning:
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 
+(setq default-input-method "portuguese-prefix")
+
 ;; ==================================================
 ;; Env vars
 ;; ==================================================
