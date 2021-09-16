@@ -721,3 +721,14 @@ There are two things you can do about this warning:
 (use-package direx
   :config
   (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory))
+
+;; ==================================================
+;; Markdown mode
+;; https://github.com/defunkt/markdown-mode
+;; ==================================================
+
+(use-package markdown-mode
+  :ensure t
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode)))
