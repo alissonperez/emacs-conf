@@ -1,25 +1,41 @@
 ;; Load path to load third party libs
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/packs"))
 
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl
-    (warn "\
-Your version of Emacs does not support SSL connections,
-which is unsafe because it allows man-in-the-middle attacks.
-There are two things you can do about this warning:
-1. Install an Emacs version that does support SSL and be safe.
-2. Remove this warning from your init file so you won't see it again."))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  ;; (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
+; Set up melpa package repository
 (require 'package)
+(setq package-enable-at-startup nil)
+
+(add-to-list 'package-archives
+             '("gnu" . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives
+	     '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+
+(package-initialize)
+
+;; (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+;;                     (not (gnutls-available-p))))
+;;        (proto (if no-ssl "http" "https")))
+;;   (when no-ssl
+;;     (warn "\
+;; Your version of Emacs does not support SSL connections,
+;; which is unsafe because it allows man-in-the-middle attacks.
+;; There are two things you can do about this warning:
+;; 1. Install an Emacs version that does support SSL and be safe.
+;; 2. Remove this warning from your init file so you won't see it again."))
+;;   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
+;;   ;; (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+;;   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+;;   (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+;;   (when (< emacs-major-version 24)
+;;     ;; For important compatibility libraries like cl-lib
+;;     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
+
+;; (require 'package)
+;; (setq package-enable-at-startup nil)
 
 ;; Better scroll
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
@@ -35,7 +51,7 @@ There are two things you can do about this warning:
  '(magit-commit-arguments '("--gpg-sign=A41BF0ECF08B6764"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
-   '(typescript-mode zoom undo-tree monokai-theme format-sql sqlformat rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))
+   '(json-mode mode-mode terraform-mode terraform-doc govet typescript-mode zoom undo-tree monokai-theme format-sql rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))
  '(python-shell-exec-path nil)
  '(pyvenv-exec-shell "/bin/zsh")
  '(pyvenv-tracking-ask-before-change t)
@@ -47,7 +63,7 @@ There are two things you can do about this warning:
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 
-(setq default-input-method "portuguese-prefix")
+;; (setq default-input-method "portuguese-prefix")
 
 ;; ==================================================
 ;; Env vars
@@ -429,7 +445,7 @@ There are two things you can do about this warning:
 ;; Zoom docs: https://github.com/cyrus-and/zoom
 
 (defun size-callback ()
-  (cond ((> (frame-pixel-width) 1280) '(120 . 0.75))
+  (cond ((> (frame-pixel-width) 1280) '(120 . 0))
         (t                            '(0.5 . 0.5))))
 
 (use-package zoom
@@ -636,7 +652,9 @@ There are two things you can do about this warning:
             (setq indent-tabs-mode 1)))
 
 (use-package go-mode
-  :ensure t)
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.go$" . go-mode)))
 
 ;; =========================================================
 ;; Magit GH Pull Request (open pull request on git directly with emacs)
@@ -732,3 +750,13 @@ There are two things you can do about this warning:
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)))
+
+;; ==================================================
+;; terraform mode
+;; ==================================================
+
+(use-package terraform-mode
+  :ensure t
+  :mode (("\\.tf\\'" . terraform-mode)
+	 )
+  )
