@@ -683,16 +683,30 @@
 ;; https://github.com/Alexander-Miller/treemacs
 ;; ==================================================
 
+;; treemacs func to toggle treemacs-select-window and quit (q key) if treemacs is current buffer
+(defun treemacs-toggle ()
+  (interactive)
+  (if (string= (buffer-name) "*treemacs*")
+      (keyboard-escape-quit)
+    (treemacs-select-window)))
+
+;; disable markdown-mode shortcut C-c C-c (to be used with treemacs)
+(with-eval-after-load 'markdown-mode
+  (define-key markdown-mode-map (kbd "C-c C-c") nil))
+
 (use-package treemacs-projectile
   :ensure t
 
   :bind
-  ("M-0" . treemacs-select-window)
-  ("C-c C-p" . treemacs)
+  ;; ("M-0" . treemacs-select-window)
+  ("M-0" . treemacs-toggle)
+  ("C-c C-c" . treemacs-display-current-project-exclusively)
 
   :config
   (setq treemacs-is-never-other-window t)
-  )
+  ;; increase width
+  (setq treemacs-width 55))
+
 
 (use-package treemacs-projectile
   :after (treemacs projectile)
