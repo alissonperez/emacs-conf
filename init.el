@@ -4,17 +4,20 @@
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 ; Set up melpa package repository
-(require 'package)
+; (require 'package)
 (setq package-enable-at-startup nil)
 
-(add-to-list 'package-archives
-             '("gnu" . "https://elpa.gnu.org/packages/"))
+(setq python-shell-interpreter "python")
+(setq python-interpreter "python")
+
+;; (add-to-list 'package-archives
+;;              '("gnu" . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives
-	     '("elpy" . "https://jorgenschaefer.github.io/packages/"))
+;; (add-to-list 'package-archives
+;; 	     '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 
-(package-initialize)
+;; (package-initialize)
 
 ;; (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
 ;;                     (not (gnutls-available-p))))
@@ -51,14 +54,12 @@
  '(magit-commit-arguments '("--gpg-sign=A41BF0ECF08B6764"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
-   '(json-mode mode-mode terraform-mode terraform-doc govet typescript-mode zoom undo-tree monokai-theme format-sql rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors git-gutter-fringe use-package))
+   '(applescript-mode kotlin-mode json-mode mode-mode terraform-mode terraform-doc govet typescript-mode zoom undo-tree monokai-theme format-sql rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors use-package))
  '(python-shell-exec-path nil)
  '(pyvenv-exec-shell "/bin/zsh")
  '(pyvenv-tracking-ask-before-change t)
  '(zoom-mode t nil (zoom))
  '(zoom-size 'size-callback))
-
-(package-initialize)
 
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -70,16 +71,7 @@
 ;; ==================================================
 
 (setenv "WORKON_HOME" (concat (getenv "HOME") "/.local/share/virtualenvs/"))
-
-;; ==================================================
-;; use-package
-;; ==================================================
-
-(if (not (package-installed-p 'use-package))
-    (progn
-      (package-refresh-contents)
-      (package-install 'use-package)))
-(require 'use-package)
+(setenv "OPENAI_API_KEY" (getenv "OPENAI_API_KEY"))
 
 ;; ==================================================
 ;; Renaming files and buffers
@@ -110,6 +102,23 @@
        (progn
 	 (replace-regexp "\\([A-Z]\\)" "_\\1" nil (region-beginning) (region-end))
 	 (downcase-region (region-beginning) (region-end))))
+
+;; ==================================================
+;; Adding straight
+;; ==================================================
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;; ==================================================
 ;; Recent files
@@ -174,14 +183,32 @@
 (setq ring-bell-function 'ignore)
 
 ;;===========================================================
-;; Git gutter fringe
+;; Git gutter
 ;;============================================================
 
-(use-package git-gutter-fringe
+(use-package git-gutter
   :ensure t
-  :init
-  (global-git-gutter-mode t)
+
+  :config
+  (setq git-gutter:update-interval 2)  ; Update intervals for changes
+  (setq display-line-numbers-width 2)
+
+  ;; Customize the signs in the gutter
+  ;; (setq git-gutter:modified-sign "  ")  ; Two spaces for modified lines (change the signs as you prefer)
+  ;; (setq git-gutter:added-sign "++")     ; '++' for added lines
+  ;; (setq git-gutter:deleted-sign "--")   ; '--' for deleted lines
+
+  ;; Choose how to display the signs in the gutter
+  ;; (set-face-background 'git-gutter:modified "purple") ; background color for modified lines
+  ;; (set-face-foreground 'git-gutter:added "green")     ; text color for added lines
+  ;; (set-face-foreground 'git-gutter:deleted "red")     ; text color for deleted lines
+
+  ;; Optional: Enable diff-hl-mode only in certain modes
+  (add-hook 'prog-mode-hook 'git-gutter-mode)
+  (add-hook 'text-mode-hook 'git-gutter-mode)
   )
+
+(global-git-gutter-mode +1)
 
 ;;===========================================================
 ;; Undo tree (https://www.emacswiki.org/emacs/UndoTree)
@@ -209,7 +236,7 @@
 (blink-cursor-mode -1)
 
 ;; Line numbers
-(global-linum-mode t)
+(global-display-line-numbers-mode 1)
 
 (use-package drag-stuff
   :ensure t
@@ -333,11 +360,6 @@
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
-
-;; ==========================================================
-;; ORG-MODE
-;; ==========================================================
-
 
 ;; ==========================================================
 ;; Evaluate lisp expressions and replace with result
@@ -506,47 +528,6 @@
   :ensure t)
 
 ;; ==========================================================
-;; Ruby things...
-;; ==========================================================
-
-;; (setq exec-path
-;;       (cons (concat (getenv "HOME") "/.rbenv/shims")
-;; 	    (cons (concat (getenv "HOME") "/.rbenv/bin") exec-path)))
-
-;; (use-package rubocop
-;;   :ensure t
-;;   :config
-;;   (add-hook 'enh-ruby-mode-hook (rubocop-mode 1)))
-
-;; (use-package ruby-tools
-;;   :ensure t)
-
-;; (use-package rspec-mode
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (setq rspec-use-rake-flag nil)))
-;;     ;; (defadvice rspec-compile (around rspec-compile-around activate)
-;;     ;;   "Use BASH shell for running the specs because of ZSH issues."
-;;     ;;   (let ((shell-file-name "/bin/bash"))
-;;     ;; 	ad-do-it))
-;;     ;; ))
-
-;; (use-package enh-ruby-mode
-;;   :ensure t
-;;   :config
-;;   (setq enh-ruby-deep-indent-paren nil)
-;;   :init
-;;   (add-to-list 'auto-mode-alist
-;; 	       '("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode)))
-
-;; (use-package robe
-;;   :ensure t
-;;   :init
-;;   (add-hook 'enh-ruby-mode-hook 'robe-mode)
-;;   (add-hook 'robe-mode-hook 'ac-robe-setup))
-
-;; ==========================================================
 ;; Editor config
 ;; ==========================================================
 
@@ -556,15 +537,6 @@
   (add-hook 'prog-mode-hook (editorconfig-mode 1))
   (add-hook 'text-mode-hook (editorconfig-mode 1))
   )
-
-;; ==========================================================
-;; Dash at point
-;; ==========================================================
-
-;; (use-package dash-at-point
-;;   :ensure t
-;;   :config
-;;   (global-set-key "\C-cd" 'dash-at-point))
 
 ;; ==========================================================
 ;; Textmate minnor mode (https://melpa.org/#/textmate)
@@ -657,15 +629,6 @@
   (add-to-list 'auto-mode-alist '("\\.go$" . go-mode)))
 
 ;; =========================================================
-;; Magit GH Pull Request (open pull request on git directly with emacs)
-;; =========================================================
-
-;; (use-package magit-gh-pulls
-;;  :ensure t
-;;  :init
-;;  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
-
-;; =========================================================
 ;; Groovy mode (using to edit files like Jenkinsfile)
 ;; =========================================================
 
@@ -689,22 +652,6 @@
   (setq
    pipenv-projectile-after-switch-function
    'pipenv-projectile-after-switch-extended))
-
-;; =========================================================
-;; Tabnine
-;; =========================================================
-
-;; (use-package company-tabnine :ensure t)
-
-
-;; =========================================================
-;; vue-mode
-;; =========================================================
-
-(use-package vue-mode
-  :mode "\\.vue$"
-  :config
-  (add-to-list 'mmm-save-local-variables '(syntax-ppss-table buffer)))
 
 ;; ==================================================
 ;; Macros
@@ -732,13 +679,24 @@
   (define-key dired-mode-map ";" 'dired-subtree-remove))
 
 ;; ==================================================
-;; Add direx
-;; https://github.com/emacsorphanage/direx
+;; Add treemacs
+;; https://github.com/Alexander-Miller/treemacs
 ;; ==================================================
 
-(use-package direx
+(use-package treemacs-projectile
+  :ensure t
+
+  :bind
+  ("M-0" . treemacs-select-window)
+  ("C-c C-p" . treemacs)
+
   :config
-  (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory))
+  (setq treemacs-is-never-other-window t)
+  )
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
 
 ;; ==================================================
 ;; Markdown mode
@@ -776,3 +734,13 @@
   (delq 'company-preview-if-just-one-frontend company-frontends))
 
 (define-key copilot-completion-map (kbd "C-<return>") 'copilot-accept-completion)
+
+;; ==================================================
+;; rxjs-mode
+;; ==================================================
+
+(use-package rjsx-mode
+  :ensure t
+  :mode (("\\.js\\'" . rjsx-mode)
+	 ("\\.jsx\\'" . rjsx-mode))
+  )

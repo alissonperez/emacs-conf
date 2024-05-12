@@ -35,3 +35,9 @@ autosaves/*
 /bookmarks
 quelpa/
 anaconda-mode/
+straight/
+transient/
+projects
+*~
+.cache/
+.emacs.desktop*
