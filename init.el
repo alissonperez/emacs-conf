@@ -690,17 +690,12 @@
       (keyboard-escape-quit)
     (treemacs-select-window)))
 
-;; disable markdown-mode shortcut C-c C-c (to be used with treemacs)
-(with-eval-after-load 'markdown-mode
-  (define-key markdown-mode-map (kbd "C-c C-c") nil))
-
 (use-package treemacs-projectile
   :ensure t
 
   :bind
   ;; ("M-0" . treemacs-select-window)
-  ("M-0" . treemacs-toggle)
-  ("C-c C-c" . treemacs-display-current-project-exclusively)
+  ("M-0" . treemacs-display-current-project-exclusively)
 
   :config
   (setq treemacs-is-never-other-window t)
