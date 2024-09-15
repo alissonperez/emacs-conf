@@ -1,45 +1,6 @@
 ;; Load path to load third party libs
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/packs"))
 
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
-; Set up melpa package repository
-; (require 'package)
-(setq package-enable-at-startup nil)
-
-(setq python-shell-interpreter "python")
-(setq python-interpreter "python")
-
-;; (add-to-list 'package-archives
-;;              '("gnu" . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-;; (add-to-list 'package-archives
-;; 	     '("elpy" . "https://jorgenschaefer.github.io/packages/"))
-
-;; (package-initialize)
-
-;; (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-;;                     (not (gnutls-available-p))))
-;;        (proto (if no-ssl "http" "https")))
-;;   (when no-ssl
-;;     (warn "\
-;; Your version of Emacs does not support SSL connections,
-;; which is unsafe because it allows man-in-the-middle attacks.
-;; There are two things you can do about this warning:
-;; 1. Install an Emacs version that does support SSL and be safe.
-;; 2. Remove this warning from your init file so you won't see it again."))
-;;   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-;;   ;; (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-;;   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-;;   (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
-;;   (when (< emacs-major-version 24)
-;;     ;; For important compatibility libraries like cl-lib
-;;     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
-
-;; (require 'package)
-;; (setq package-enable-at-startup nil)
-
 ;; Better scroll
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
@@ -53,8 +14,7 @@
  '(initial-frame-alist '((fullscreen . maximized)))
  '(magit-commit-arguments '("--gpg-sign=A41BF0ECF08B6764"))
  '(magit-diff-use-overlays nil)
- '(package-selected-packages
-   '(applescript-mode kotlin-mode json-mode mode-mode terraform-mode terraform-doc govet typescript-mode zoom undo-tree monokai-theme format-sql rjsx-mode company-tabnine vue-mode go-mode php-mode csharp-mode magit-gh-pulls dockerfile-mode groovy-mode flycheck ac-js2 js2-mode nodejs-repl exec-path-from-shell org-bullets apib-mode textmate editorconfig protobuf-mode auto-complete golden-ratio magit elpy material-theme flx-ido ido-completing-read+ ido-vertical-mode smartparens projectile yaml-mode ace-jump-mode expand-region drag-stuff multiple-cursors use-package))
+ '(package-selected-packages nil)
  '(python-shell-exec-path nil)
  '(pyvenv-exec-shell "/bin/zsh")
  '(pyvenv-tracking-ask-before-change t)
@@ -67,10 +27,31 @@
 ;; (setq default-input-method "portuguese-prefix")
 
 ;; ==================================================
-;; Env vars
+;; Python
 ;; ==================================================
 
+(setq python-shell-interpreter "python")
 (setenv "WORKON_HOME" (concat (getenv "HOME") "/.local/share/virtualenvs/"))
+
+;; ;; Add lsp-mode and lsp-pyright:
+;; (use-package lsp-mode
+;;   :straight t
+;;   :hook (python-mode . lsp)
+;;   :commands lsp
+;;   :config
+;;   (setq lsp-prefer-flymake nil))  ; Use flycheck instead of flymake
+
+;; (use-package lsp-pyright
+;;   :straight t
+;;   :after lsp-mode
+;;   :hook (python-mode . (lambda ()
+;;                          (require 'lsp-pyright)
+;;                          (lsp))))
+
+;; ==================================================
+;; OpenAI API KEY
+;; ==================================================
+
 (setenv "OPENAI_API_KEY" (getenv "OPENAI_API_KEY"))
 
 ;; ==================================================
@@ -187,7 +168,7 @@
 ;;============================================================
 
 (use-package git-gutter
-  :ensure t
+  :straight t
 
   :config
   (setq git-gutter:update-interval 2)  ; Update intervals for changes
@@ -202,10 +183,6 @@
   ;; (set-face-background 'git-gutter:modified "purple") ; background color for modified lines
   ;; (set-face-foreground 'git-gutter:added "green")     ; text color for added lines
   ;; (set-face-foreground 'git-gutter:deleted "red")     ; text color for deleted lines
-
-  ;; Optional: Enable diff-hl-mode only in certain modes
-  (add-hook 'prog-mode-hook 'git-gutter-mode)
-  (add-hook 'text-mode-hook 'git-gutter-mode)
   )
 
 (global-git-gutter-mode +1)
@@ -215,14 +192,15 @@
 ;;============================================================
 
 (use-package undo-tree
-  :ensure t)
+  :straight t
+  )
 
 ;;============================================================
 ;; Multiple Cursors
 ;;============================================================
 
 (use-package multiple-cursors
-  :ensure t
+  :straight t
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-c C-w" . mc/mark-all-like-this))
@@ -239,30 +217,73 @@
 (global-display-line-numbers-mode 1)
 
 (use-package drag-stuff
-  :ensure t
+  :straight t
   :bind (("M-p" . drag-stuff-up)
          ("M-n" . drag-stuff-down)))
 
 (use-package expand-region
-  :ensure t
+  :straight t
   :bind (("C-M-SPC" . er/expand-region)
          ("C-+" . er/contract-region))
   )
 
-(use-package ace-jump-mode
-  :ensure t
-  :bind (("C-c SPC" . ace-jump-mode)
-         ("C-c C-SPC" . ace-jump-mode-pop-mark))
+;; Themes:
+
+;; (use-package solarized-theme :ensure t :init (load-theme 'solarized-dark :no-confirm))
+;; (use-package monokai-theme :ensure t :init (load-theme 'monokai :no-confirm))
+(use-package material-theme
+  :straight t
+  :init (load-theme 'material :no-confirm))
+
+;; ==========================================================
+;; AVY (replaces ace-jump)
+;; ==========================================================
+
+(use-package counsel
+  :straight t
+  :after ivy
+  :config (counsel-mode 1))
+
+;; Disable ido-mode if it's enabled
+(ido-mode -1)
+
+;; Use counsel-find-file for C-x C-f
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+
+(use-package ivy
+  :straight t
+  :diminish (ivy-mode)
+  :bind (("C-:" . avy-goto-char)
+         ("C-x b" . ivy-switch-buffer)
+         ("C-x C-f" . counsel-find-file)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line))
   :config
-  (setq ace-jump-mode-case-fold t)
-  )
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t
+        ivy-count-format "(%d/%d) "
+        ivy-wrap t
+        ;; Enable fuzzy matching for all commands except swiper
+        ivy-re-builders-alist
+        '((swiper . ivy--regex-plus)   ;; Regular regex matching for swiper
+          (t . ivy--regex-fuzzy))))    ;; Fuzzy matching for everything else
+
+(use-package flx
+  :straight t)
+
+(use-package swiper
+  :straight t
+  :bind (("C-s" . swiper)))
 
 ;; ==========================================================
 ;; YAML-MODE
 ;; ==========================================================
 
 (use-package yaml-mode
-  :ensure t
+  :straight t
   :init
   :mode ("\\.yml$" . yaml-mode))
 
@@ -274,7 +295,7 @@
 (setq projectile-keymap-prefix (kbd "C-c p"))
 
 (use-package projectile
-  :ensure t
+  :straight t
   :init
   (projectile-global-mode t)
   :config
@@ -285,15 +306,19 @@
         projectile-mode-line '(:eval (format " P[%s]" (projectile-project-name)))
         ;; projectile-completion-system 'grizzl
         ;; projectile-completion-system 'helm
-        ;; projectile-completion-system 'ivy
+        projectile-completion-system 'ivy
         ))
+
+(use-package counsel-projectile
+  :straight t
+  :config (counsel-projectile-mode))
 
 ;; ==================================================
 ;; Smartparens
 ;; ==================================================
 
 (use-package smartparens
-  :ensure t
+  :straight t
   :diminish smartparens-mode
   :config
   (progn
@@ -304,78 +329,49 @@
 ;; Ido
 ;; ==================================================
 
-(use-package ido
-  :ensure t
-  :init
-  (ido-mode t)
-  :config
-  (setq ido-enable-prefix nil
-        ido-enable-flex-matching t
-        ido-create-new-buffer 'always
-        ido-use-filename-at-point 'guess
-        ido-max-prospects 10
-        ido-default-file-method 'selected-window
-        ido-file-extensions-order '(".py")
-        ido-auto-merge-work-directories-length -1)
-  (add-to-list 'ido-ignore-files '(".DS_Store" ".pyc"))
-  (add-to-list 'ido-ignore-directories '("__pycache__", ".git"))
+;; (use-package ido
+;;   :straight t
+;;   :init
+;;   (ido-mode t)
+;;   :config
+;;   (setq ido-enable-prefix nil
+;;         ido-enable-flex-matching t
+;;         ido-create-new-buffer 'always
+;;         ido-use-filename-at-point 'guess
+;;         ido-max-prospects 10
+;;         ido-default-file-method 'selected-window
+;;         ido-file-extensions-order '(".py")
+;;         ido-auto-merge-work-directories-length -1)
+;;   (add-to-list 'ido-ignore-files '(".DS_Store" ".pyc"))
+;;   (add-to-list 'ido-ignore-directories '("__pycache__", ".git")))
 
-  (use-package ido-vertical-mode
-    :ensure t
-    :init
-    (setq ido-vertical-decorations (list "\n➜ " "" "\n" "\n..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]" "\n" ""))
-    (ido-vertical-mode 1))
+;; (use-package ido-vertical-mode
+;;     :straight t
+;;     :init
+;;     (setq ido-vertical-decorations (list "\n➜ " "" "\n" "\n..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]" "\n" ""))
+;;     (ido-vertical-mode 1))
 
-  (use-package ido-completing-read+
-    :ensure t
-    :init
-    (ido-ubiquitous-mode +1))
+;; (use-package ido-completing-read+
+;;   :straight t
+;;   :init
+;;   (ido-ubiquitous-mode +1))
 
-  (use-package flx-ido
-    :ensure t
-    :init
-    (flx-ido-mode +1)))
-
-;; ==================================================
-;; Themes
-;; ==================================================
-
-;; (use-package solarized-theme :ensure t :init (load-theme 'solarized-dark :no-confirm))
-;; (use-package monokai-theme :ensure t :init (load-theme 'monokai :no-confirm))
-(use-package material-theme :ensure t :init (load-theme 'material :no-confirm))
-
-;; ==================================================
-;; Elpy
-;; ==================================================
-
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable))
+;; (use-package flx-ido
+;;   :straight t
+;;   :init
+;;   (flx-ido-mode +1))
 
 ;;===========================================================
 ;; Magit
 ;;============================================================
 
 (use-package magit
-  :ensure t
+  :straight t
   :bind ("C-x g" . magit-status))
-
-;; ==========================================================
-;; Evaluate lisp expressions and replace with result
-;; ==========================================================
-
-(defun replace-last-sexp ()
-    (interactive)
-    (let ((value (eval (preceding-sexp))))
-      (kill-sexp -1)
-      (insert (format "%S" value))))
-
-(global-set-key (kbd "C-c C-f") 'replace-last-sexp)
 
 ;;===========================================================
 
-(setq org-cycle-emulate-tab 'whitestart)
+;; (setq org-cycle-emulate-tab 'whitestart)
 
 ;; ===========================================================
 ;; Header line
@@ -461,7 +457,7 @@
 (global-set-key (kbd "C-x C-a") 'rename-file-and-buffer)
 
 ;; ==========================================================
-;; Golden Ratio / Zoom package
+;; Zoom package
 ;; ==========================================================
 
 ;; Zoom docs: https://github.com/cyrus-and/zoom
@@ -471,7 +467,7 @@
         (t                            '(0.5 . 0.5))))
 
 (use-package zoom
-  :ensure t
+  :straight t
   :init
   (custom-set-variables '(zoom-mode t))
   (custom-set-variables
@@ -480,59 +476,64 @@
    '(zoom-size 'size-callback))
   )
 
-;; Disable to try Zoom package
-;; (use-package golden-ratio
-;;   :ensure t
-;;   :diminish golden-ratio-mode
-;;   :init
-;;   (golden-ratio-mode 1)
-;;   (setq golden-ratio-adjust-factor .9
-;; 	golden-ratio-wide-adjust-factor .9))
-
 ;; ==========================================================
 ;; highlight-indentation
 ;; ==========================================================
 
-(use-package highlight-indentation
-  :ensure t
+(use-package highlight-indent-guides
+  :straight t
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :config
+  (setq highlight-indent-guides-method 'character))
+
+;; ==========================================================
+;; Which key
+;; ==========================================================
+
+(use-package which-key
+  :straight t
+  :diminish which-key-mode
   :init
-  (add-hook 'enh-ruby-mode-hook
-	    (lambda () (highlight-indentation-current-column-mode)))
-  (add-hook 'enh-ruby-mode-hook
-	    (lambda () (highlight-indentation-mode)))
+  (which-key-mode)
   :config
-  (set-face-background 'highlight-indentation-face "#692C2C")
-  (set-face-background 'highlight-indentation-current-column-face "#850B0B"))
-
+  (setq which-key-idle-delay 0.3))
 
 ;; ==========================================================
-;; Auto complete
+;; Company (replaces auto complete)
 ;; ==========================================================
 
-(use-package auto-complete
-  :ensure t
+(use-package company
+  :straight t
+  :diminish company-mode
+  :bind (:map company-active-map
+              ("<tab>" . company-complete-selection))
+  :hook (after-init . global-company-mode)
   :config
-  (require 'auto-complete-config)
-  (add-to-list 'ac-dictionary-directories
-	       "~/.emacs.d/elpa/auto-complete-20160827.649/dict")
-  (ac-config-default)
-  (setq ac-ignore-case nil)
-  (add-to-list 'ac-modes 'enh-ruby-mode)
-  (add-to-list 'ac-modes 'web-mode))
+  (setq company-idle-delay 0
+        company-minimum-prefix-length 1
+        company-show-numbers t))
+
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "C-<return>") nil))
+
+(use-package company-box
+  :straight t
+  :hook (company-mode . company-box-mode))
 
 ;; ==========================================================
 ;; Protobuffer
 ;; ==========================================================
 
 (use-package protobuf-mode
-  :ensure t)
+  :straight t
+  )
 
 ;; ==========================================================
 ;; Editor config
 ;; ==========================================================
 
 (use-package editorconfig
-  :ensure t
+  :straight t
   :init
   (add-hook 'prog-mode-hook (editorconfig-mode 1))
   (add-hook 'text-mode-hook (editorconfig-mode 1))
@@ -543,7 +544,7 @@
 ;; ==========================================================
 
 (use-package textmate
-  :ensure t
+  :straight t
   :init
   (textmate-mode)
   :config
@@ -554,7 +555,7 @@
 ;; ==========================================================
 
 (use-package yasnippet
-  :ensure t
+  :straight t
   :config
     (yas-reload-all)
     (yas-global-mode 1)
@@ -563,25 +564,19 @@
     :bind (("C-c C-h" . yas-expand)))
 
 ;; ==========================================================
-;; API Blue print
-;; ==========================================================
-
-(use-package apib-mode
-  :ensure t)
-
-;; ==========================================================
 ;; Org Bullets
 ;; ==========================================================
 
 (use-package org-bullets
-  :ensure t)
+  :straight t
+  )
 
 ;; ==========================================================
 ;; Exec path from shell (https://github.com/purcell/exec-path-from-shell)
 ;; ==========================================================
 
 (use-package exec-path-from-shell
-  :ensure t
+  :straight t
   :init
   (exec-path-from-shell-initialize))
 
@@ -590,17 +585,19 @@
 ;; ==========================================================
 
 (use-package nodejs-repl
-  :ensure t)
+  :straight t
+  )
 
 (use-package js2-mode
-  :ensure t
+  :straight t
+  :mode "\\.js\\'"
+  :interpreter "node"
   :config
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-  (setq js2-mode-show-parse-errors nil)
-  (setq js2-mode-show-strict-warnings nil))
+  (setq js2-basic-offset 2
+        js-indent-level 2))
 
 (use-package flycheck
-  :ensure t
+  :straight t
   :init (global-flycheck-mode))
 
 ;; ==========================================================
@@ -608,7 +605,7 @@
 ;; ==========================================================
 
 (use-package typescript-mode
-  :ensure t
+  :straight t
   :config
   (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode)))
 
@@ -616,31 +613,26 @@
 ;; GO Things...
 ;; ==========================================================
 
-;; Before safe hook to format
-(add-hook 'go-mode-hook
-          (lambda ()
-            (add-hook 'before-save-hook 'gofmt-before-save)
-            (setq tab-width 4)
-            (setq indent-tabs-mode 1)))
-
 (use-package go-mode
-  :ensure t
+  :straight t
+  :hook (before-save . gofmt-before-save)
   :config
-  (add-to-list 'auto-mode-alist '("\\.go$" . go-mode)))
+  (setq tab-width 4
+        indent-tabs-mode 1))
 
-;; =========================================================
-;; Groovy mode (using to edit files like Jenkinsfile)
-;; =========================================================
-
-(use-package groovy-mode
-  :ensure t)
+;; TODO: Setup LSP for Go
+;; (use-package lsp-mode
+;;   :straight t
+;;   :hook (go-mode . lsp)
+;;   :commands lsp)
 
 ;; =========================================================
 ;; Dockerfile mode
 ;; =========================================================
 
 (use-package dockerfile-mode
-  :ensure t)
+  :straight t
+  )
 
 ;; =========================================================
 ;; Pipenv
@@ -648,10 +640,20 @@
 
 (use-package pipenv
   :hook (python-mode . pipenv-mode)
+  :straight t
   :init
   (setq
    pipenv-projectile-after-switch-function
    'pipenv-projectile-after-switch-extended))
+
+;; =========================================================
+;; Poetry
+;; =========================================================
+
+;; Use poetry:
+;; (use-package poetry
+;;   :straight t
+;;   :hook (python-mode . poetry-tracking-mode))
 
 ;; ==================================================
 ;; Macros
@@ -669,16 +671,6 @@
   (windmove-default-keybindings))
 
 ;; ==================================================
-;; Add dired-subtree
-;; https://github.com/Fuco1/dired-hacks
-;; ==================================================
-
-(use-package dired-subtree
-  :config
-  (define-key dired-mode-map "i" 'dired-subtree-insert)
-  (define-key dired-mode-map ";" 'dired-subtree-remove))
-
-;; ==================================================
 ;; Add treemacs
 ;; https://github.com/Alexander-Miller/treemacs
 ;; ==================================================
@@ -691,10 +683,9 @@
     (treemacs-select-window)))
 
 (use-package treemacs-projectile
-  :ensure t
-
+  :straight t
+  ;; :after (treemacs projectile)
   :bind
-  ;; ("M-0" . treemacs-select-window)
   ("M-0" . treemacs-display-current-project-exclusively)
 
   :config
@@ -702,18 +693,13 @@
   ;; increase width
   (setq treemacs-width 55))
 
-
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
-
 ;; ==================================================
 ;; Markdown mode
 ;; https://github.com/defunkt/markdown-mode
 ;; ==================================================
 
 (use-package markdown-mode
-  :ensure t
+  :straight t
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)))
@@ -723,7 +709,7 @@
 ;; ==================================================
 
 (use-package terraform-mode
-  :ensure t
+  :straight t
   :mode (("\\.tf\\'" . terraform-mode)
 	 )
   )
@@ -734,7 +720,6 @@
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
-  :ensure t
   :init
   (add-hook 'prog-mode-hook 'copilot-mode))
 
@@ -745,11 +730,41 @@
 (define-key copilot-completion-map (kbd "C-<return>") 'copilot-accept-completion)
 
 ;; ==================================================
-;; rxjs-mode
+;; web-mode
 ;; ==================================================
 
-(use-package rjsx-mode
-  :ensure t
-  :mode (("\\.js\\'" . rjsx-mode)
-	 ("\\.jsx\\'" . rjsx-mode))
-  )
+(use-package web-mode
+  :straight t
+  :mode (("\\.tsx\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
+  :config
+  (setq web-mode-enable-auto-quoting nil))  ; Disable automatic insertion of quotes
+
+;; ==================================================
+;; tide
+;; ==================================================
+
+(use-package tide
+  :straight t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+
+
+;; ==================================================
+;; org-ai
+;; ==================================================
+
+(setq org-ai-openai-api-token (getenv "OPENAI_API_KEY"))
+
+(use-package org-ai
+  :straight t
+  :commands (org-ai-mode
+             org-ai-global-mode)
+  :init
+  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
+  (org-ai-global-mode) ; installs global keybindings on C-c M-a
+  :config
+  (setq org-ai-default-chat-model "gpt-4o-mini") ; if you are on the gpt-4 beta:
+  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets

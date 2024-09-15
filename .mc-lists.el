@@ -22,8 +22,10 @@
 	org-return
 	org-self-insert-command
 	org-yank
+	rjsx-delete-creates-full-tag
 	sgml-slash
 	undefined
+	undo-redo
 	upcase-region
 	yaml-electric-backspace
 	yaml-electric-dash-and-dot
