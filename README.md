@@ -1,14 +1,15 @@
-# My Awesome Emacs Config
+# My Emacs Config
 
-![Screen Shot 2024-09-15 at 00 00 09](https://github.com/user-attachments/assets/a67af8a0-eeec-42ea-b35b-7b65c93c0435)
+An advanced and feature-rich Emacs configuration designed to enhance your development workflow that I've been building over the years. This setup leverages modern Emacs packages for better performance, improved navigation, enhanced coding experience, and seamless integrations across various programming languages.
 
-An advanced and feature-rich Emacs configuration designed to enhance your development workflow. This setup leverages modern Emacs packages for better performance, improved navigation, enhanced coding experience, and seamless integrations across various programming languages.
+![image](https://github.com/user-attachments/assets/78528fce-d285-4353-b3a6-9980729c7761)
 
 ## Features
 
 - **Modern Interface and Navigation**:
   - **`ivy` and `counsel`**: Provides a powerful interface for file and buffer switching, command execution, and more, with fuzzy searching enabled.
   - **`avy`**: Quickly jump to any visible text in Emacs, replacing `ace-jump-mode`.
+  - **`doom-modeline`**: A sleek and modern modeline that provides rich contextual information such as buffer status, Git branch, LSP status, and more.
   - **`which-key`**: Discover available keybindings on-the-fly.
 
 - **Enhanced Coding Experience**:
@@ -68,6 +69,7 @@ Here is a complete list of the libraries included in this configuration:
   - `counsel`
   - `swiper`
   - `avy`
+  - `doom-modeline`
   - `which-key`
   - `flx`
 
@@ -114,6 +116,7 @@ Here is a complete list of the libraries included in this configuration:
 
 - **Appearance**:
   - `material-theme`
+  - `doom-modeline`
 
 ## Usage
 

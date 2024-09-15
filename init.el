@@ -768,3 +768,43 @@
   :config
   (setq org-ai-default-chat-model "gpt-4o-mini") ; if you are on the gpt-4 beta:
   (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
+
+;; ==================================================
+;; Doom modeline
+;; ==================================================
+
+;; (use-package nerd-icons
+;;   :straight t)
+
+(use-package all-the-icons
+  ;; :straight (:host github
+  ;;            :repo "domtronn/all-the-icons.el"
+  ;;            :commit "52d1f2d")  ;; Replace <commit-hash> with the hash for version 3.4.0
+  :straight t
+  :commands (nerd-icons-octicon
+             nerd-icons-faicon
+             nerd-icons-flicon
+             nerd-icons-wicon
+             nerd-icons-mdicon
+             nerd-icons-codicon
+             nerd-icons-devicon
+             nerd-icons-ipsicon
+             nerd-icons-pomicon
+             nerd-icons-powerline)
+  :if (display-graphic-p))  ;; Load only if Emacs is in GUI mode
+
+;; https://github.com/seagle0128/doom-modeline
+
+(use-package doom-modeline
+  :straight t
+  :init
+  (doom-modeline-mode 1)
+  :config
+  ;; Customize settings here
+  (setq doom-modeline-height 25)                ;; Set the height of the modeline
+  (setq doom-modeline-minor-modes nil)          ;; Hide minor modes
+  (setq doom-modeline-icon t)				    ;; Show icons
+  (setq doom-modeline-icon-type 'all-the-icons) ;; Use all-the-icons as the icon set
+  (setq doom-modeline-lsp t)                    ;; Show LSP info in the modeline
+  (setq doom-modeline-buffer-file-name-style 'truncate-except-project)  ;; Truncate path
+  )
