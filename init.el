@@ -30,9 +30,6 @@
 ;; Python
 ;; ==================================================
 
-(setq python-shell-interpreter "python")
-(setenv "WORKON_HOME" (concat (getenv "HOME") "/.local/share/virtualenvs/"))
-
 ;; ;; Add lsp-mode and lsp-pyright:
 ;; (use-package lsp-mode
 ;;   :straight t
@@ -47,12 +44,6 @@
 ;;   :hook (python-mode . (lambda ()
 ;;                          (require 'lsp-pyright)
 ;;                          (lsp))))
-
-;; ==================================================
-;; OpenAI API KEY
-;; ==================================================
-
-(setenv "OPENAI_API_KEY" (getenv "OPENAI_API_KEY"))
 
 ;; ==================================================
 ;; Renaming files and buffers
@@ -100,6 +91,22 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+;; ==========================================================
+;; Exec path from shell (https://github.com/purcell/exec-path-from-shell)
+;; ==========================================================
+
+(use-package exec-path-from-shell
+  :straight t
+  :init
+  ;; (setq exec-path-from-shell-check-startup-files nil)
+  ;; (setq exec-path-from-shell-arguments '("-l"))
+  (setq exec-path-from-shell-arguments '("-l" "-i")) ;; Use this if needed
+  (setq exec-path-from-shell-variables '("PATH" "OPENAI_API_KEY"))
+  (exec-path-from-shell-initialize))
+
+;; To check which shell is being used
+;; (shell-command-to-string "echo $SHELL")
 
 ;; ==================================================
 ;; Recent files
@@ -570,15 +577,6 @@
 (use-package org-bullets
   :straight t
   )
-
-;; ==========================================================
-;; Exec path from shell (https://github.com/purcell/exec-path-from-shell)
-;; ==========================================================
-
-(use-package exec-path-from-shell
-  :straight t
-  :init
-  (exec-path-from-shell-initialize))
 
 ;; ==========================================================
 ;; JS things...
