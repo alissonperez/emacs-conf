@@ -738,19 +738,22 @@
   :mode (("\\.tsx\\'" . web-mode)
          ("\\.jsx\\'" . web-mode))
   :config
+  (setq web-mode-enable-auto-indentation nil) ;; Disable auto indentation
   (setq web-mode-enable-auto-quoting nil))  ; Disable automatic insertion of quotes
 
 ;; ==================================================
 ;; tide
 ;; ==================================================
 
+;; https://github.com/ananthakumaran/tide
 (use-package tide
   :straight t
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . tide-setup)
          (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
-
+         (before-save . tide-format-before-save)) ;; Indentation on save, if you want to disable it, just comment this line
+  :config
+  (setq tide-format-options '(:indentSize 2 :tabSize 2)))
 
 ;; ==================================================
 ;; org-ai
