@@ -273,6 +273,7 @@
          ("C-x C-f" . counsel-find-file)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
+	 ("RET" . ivy-alt-done)  ;; Use 'ivy-alt-done' to enter directories
          ("C-l" . ivy-alt-done)
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line))
