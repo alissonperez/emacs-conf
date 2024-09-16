@@ -41,3 +41,4 @@ projects
 *~
 .cache/
 .emacs.desktop*
+.lsp-session*
