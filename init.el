@@ -27,26 +27,7 @@
 ;; (setq default-input-method "portuguese-prefix")
 
 ;; ==================================================
-;; Python
-;; ==================================================
-
-;; ;; Add lsp-mode and lsp-pyright:
-;; (use-package lsp-mode
-;;   :straight t
-;;   :hook (python-mode . lsp)
-;;   :commands lsp
-;;   :config
-;;   (setq lsp-prefer-flymake nil))  ; Use flycheck instead of flymake
-
-;; (use-package lsp-pyright
-;;   :straight t
-;;   :after lsp-mode
-;;   :hook (python-mode . (lambda ()
-;;                          (require 'lsp-pyright)
-;;                          (lsp))))
-
-;; ==================================================
-;; Renaming files and buffers
+;; renaming files and buffers
 ;; ==================================================
 
 ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
@@ -91,6 +72,33 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+;; ==================================================
+;; Python
+;; ==================================================
+
+;; Add lsp-mode and lsp-pyright:
+;; Use lsp-describe-session (M-x lsp-describe-session) to check the current session
+(use-package lsp-mode
+  :straight t
+  :hook (python-mode . lsp)
+  :commands lsp
+  :config
+  (setq lsp-prefer-flymake nil))  ; Use flycheck instead of flymake
+
+(use-package lsp-pyright
+  :straight t
+  :after lsp-mode
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
+
+(defun use-current-project-poetry-venv ()
+  (interactive)
+  (let ((venv (shell-command-to-string "poetry env info -p")))
+    (setq lsp-pyright-venv-path (string-trim venv))))
+
+(add-hook 'python-mode-hook #'use-current-project-poetry-venv)
 
 ;; ==========================================================
 ;; Exec path from shell (https://github.com/purcell/exec-path-from-shell)
@@ -617,11 +625,10 @@
   (setq tab-width 4
         indent-tabs-mode 1))
 
-;; TODO: Setup LSP for Go
-;; (use-package lsp-mode
-;;   :straight t
-;;   :hook (go-mode . lsp)
-;;   :commands lsp)
+(use-package lsp-mode
+  :straight t
+  :hook (go-mode . lsp)
+  :commands lsp)
 
 ;; =========================================================
 ;; Dockerfile mode
