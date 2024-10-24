@@ -565,17 +565,49 @@
   :straight t
   )
 
-(use-package js2-mode
+;; Add rjsx-mode for JS and JSX files
+(use-package rjsx-mode
   :straight t
-  :mode "\\.js\\'"
-  :interpreter "node"
+  :mode ("\\.[jt]sx?\\'" . rjsx-mode)
   :config
-  (setq js2-basic-offset 2
-        js-indent-level 2))
+  (setq js-indent-level 2))
 
+;; use flycheck-verify-setup command to check if eslint is being used
 (use-package flycheck
   :straight t
   :init (global-flycheck-mode))
+
+;; This package automatically adds node_modules/.bin to my exec-path in Emacs,
+;; ensuring that flycheck uses the local eslint executable from your project.
+(use-package add-node-modules-path
+  :straight t
+  :hook ((js-mode . add-node-modules-path)
+         (rjsx-mode . add-node-modules-path)
+         (web-mode . add-node-modules-path)))
+
+(with-eval-after-load 'flycheck
+  ;; Disable jshint and jscs checkers as we will use eslint
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint javascript-jscs)))
+  ;; Use eslint with js2-mode
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; Use eslint with rjsx-mode
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  ;; Use eslint with web-mode (for JSX files)
+  (flycheck-add-mode 'javascript-eslint 'web-mode))
+
+(defun my/use-eslint-from-node-modules ()
+  "Use local eslint from node_modules before global."
+  (let ((root (locate-dominating-file
+               (or (buffer-file-name) default-directory)
+               "node_modules")))
+    (when root
+      (let ((eslint (expand-file-name "node_modules/.bin/eslint" root)))
+        (when (file-executable-p eslint)
+          (setq-local flycheck-javascript-eslint-executable eslint))))))
+
+(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
 ;; ==========================================================
 ;; Typescript
