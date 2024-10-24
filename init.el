@@ -264,6 +264,8 @@
 
 ;; Use counsel-find-file for C-x C-f
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+;; replace C-c p s g (original counsel-projectile-grep, by counsel-rg)
+(global-set-key (kbd "C-c p s g") 'counsel-rg)
 
 (use-package ivy
   :straight t
@@ -273,7 +275,7 @@
          ("C-x C-f" . counsel-find-file)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
-	 ("RET" . ivy-alt-done)  ;; Use 'ivy-alt-done' to enter directories
+         ("RET" . ivy-alt-done)  ;; Use 'ivy-alt-done' to enter directories
          ("C-l" . ivy-alt-done)
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line))
@@ -323,7 +325,11 @@
         projectile-mode-line '(:eval (format " P[%s]" (projectile-project-name)))
         ;; projectile-completion-system 'grizzl
         ;; projectile-completion-system 'helm
+        projectile-require-project-root t
+        ;; projectile-indexing-method 'alien
         projectile-completion-system 'ivy
+	;; Optionally, exclude specific files globally
+	projectile-globally-ignored-files '("package-lock.json" "poetry.lock")
         ))
 
 (use-package counsel-projectile
@@ -341,42 +347,6 @@
   (progn
     (require 'smartparens-config)
     (smartparens-global-mode 1)))
-
-;; ==================================================
-;; Ido
-;; ==================================================
-
-;; (use-package ido
-;;   :straight t
-;;   :init
-;;   (ido-mode t)
-;;   :config
-;;   (setq ido-enable-prefix nil
-;;         ido-enable-flex-matching t
-;;         ido-create-new-buffer 'always
-;;         ido-use-filename-at-point 'guess
-;;         ido-max-prospects 10
-;;         ido-default-file-method 'selected-window
-;;         ido-file-extensions-order '(".py")
-;;         ido-auto-merge-work-directories-length -1)
-;;   (add-to-list 'ido-ignore-files '(".DS_Store" ".pyc"))
-;;   (add-to-list 'ido-ignore-directories '("__pycache__", ".git")))
-
-;; (use-package ido-vertical-mode
-;;     :straight t
-;;     :init
-;;     (setq ido-vertical-decorations (list "\n➜ " "" "\n" "\n..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]" "\n" ""))
-;;     (ido-vertical-mode 1))
-
-;; (use-package ido-completing-read+
-;;   :straight t
-;;   :init
-;;   (ido-ubiquitous-mode +1))
-
-;; (use-package flx-ido
-;;   :straight t
-;;   :init
-;;   (flx-ido-mode +1))
 
 ;;===========================================================
 ;; Magit
