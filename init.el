@@ -285,7 +285,8 @@
         ;; Enable fuzzy matching for all commands except swiper
         ivy-re-builders-alist
         '((swiper . ivy--regex-plus)   ;; Regular regex matching for swiper
-          (t . ivy--regex-fuzzy))))    ;; Fuzzy matching for everything else
+	  (counsel-M-x . ivy--regex-fuzzy) ;; Fuzzy matching for M-x
+          (t . ivy--regex-plus))))    ;; Fuzzy matching for everything else
 
 (use-package flx
   :straight t)
