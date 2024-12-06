@@ -251,7 +251,7 @@
   :init (load-theme 'material :no-confirm))
 
 ;; ==========================================================
-;; AVY (replaces ace-jump)
+;; IVY (replaces ace-jump)
 ;; ==========================================================
 
 (use-package counsel
@@ -286,9 +286,13 @@
         ivy-wrap t
         ;; Enable fuzzy matching for all commands except swiper
         ivy-re-builders-alist
-        '((swiper . ivy--regex-plus)   ;; Regular regex matching for swiper
-	  (counsel-M-x . ivy--regex-fuzzy) ;; Fuzzy matching for M-x
-          (t . ivy--regex-fuzzy))))    ;; Fuzzy matching for everything else
+        '((swiper . ivy--regex-plus)                        ;; Regular regex matching for swiper
+	  (counsel-M-x . ivy--regex-fuzzy)                  ;; Fuzzy matching for M-x
+	  (counsel-git-grep . ivy--regex-plus)              ;; Regular regex for git grep
+          (counsel-rg . ivy--regex-plus)                    ;; Regular regex for ripgrep
+          (counsel-find-file . ivy--regex-fuzzy)            ;; Fuzzy matching for file names
+          (counsel-projectile-find-file . ivy--regex-fuzzy) ;; Fuzzy for projectile file name
+          (t . ivy--regex-fuzzy))))                         ;; Fuzzy matching for everything else
 
 (use-package flx
   :straight t)
