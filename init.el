@@ -106,9 +106,7 @@
 
 (use-package exec-path-from-shell
   :init
-  ;; (setq exec-path-from-shell-check-startup-files nil)
-  ;; (setq exec-path-from-shell-arguments '("-l"))
-  (setq exec-path-from-shell-arguments '("-i")) ;; Use this if needed
+  (setq exec-path-from-shell-arguments '("-l" "-i"))
   (setq exec-path-from-shell-variables '("PATH" "OPENAI_API_KEY"))
   (exec-path-from-shell-initialize))
 
@@ -155,9 +153,6 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
-;; Disable scroll all mode (scroll all opened buffers at same time), it's causing a screen blink
-(scroll-all-mode -1)
-
 ;; Enable downcase shortcut (C-x C-l) and uppercase (C-x C-u)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -183,7 +178,7 @@
 
 (use-package git-gutter
   :config
-  (setq git-gutter:update-interval 2)  ; Update intervals for changes
+  (setq git-gutter:update-interval 0.3)  ; Update intervals for changes
   (setq display-line-numbers-width 2)
 
   ;; Customize the signs in the gutter
@@ -203,7 +198,8 @@
 ;; Undo tree (https://www.emacswiki.org/emacs/UndoTree)
 ;;============================================================
 
-(use-package undo-tree)
+;; (use-package undo-tree) ;; Replaced by undo-fu
+(use-package undo-fu :init (global-set-key [remap undo] #'undo-fu-only-undo))
 
 ;;============================================================
 ;; Multiple Cursors
@@ -442,8 +438,6 @@
 (use-package zoom
   :init
   (custom-set-variables '(zoom-mode t))
-  (custom-set-variables
-   '(zoom-size '(0.618 . 0.618)))
   (custom-set-variables
    '(zoom-size 'size-callback))
   )
@@ -737,29 +731,14 @@
 ;; Doom modeline
 ;; ==================================================
 
-;; (use-package nerd-icons)
-
-(use-package all-the-icons
-  ;; :straight (:host github
-  ;;            :repo "domtronn/all-the-icons.el"
-  ;;            :commit "52d1f2d")  ;; Replace <commit-hash> with the hash for version 3.4.0
-  :commands (nerd-icons-octicon
-             nerd-icons-faicon
-             nerd-icons-flicon
-             nerd-icons-wicon
-             nerd-icons-mdicon
-             nerd-icons-codicon
-             nerd-icons-devicon
-             nerd-icons-ipsicon
-             nerd-icons-pomicon
-             nerd-icons-powerline)
-  :if (display-graphic-p))  ;; Load only if Emacs is in GUI mode
+(use-package nerd-icons :if (display-graphic-p))
 
 ;; https://github.com/seagle0128/doom-modeline
 
 (use-package doom-modeline
   :init
   (doom-modeline-mode 1)
+  :custom (doom-modeline-icon t)
   :config
   ;; Customize settings here
   (setq doom-modeline-height 25)                ;; Set the height of the modeline
