@@ -1,12 +1,12 @@
-;; Disable package.el in favor of straight.el
-(setq package-enable-at-startup nil)
-
 ;; Load path to load third party libs
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/packs"))
 
 ;; Better scroll
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
+
+;; Line numbers
+(setq display-line-numbers-width 2)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -179,7 +179,6 @@
 (use-package git-gutter
   :config
   (setq git-gutter:update-interval 0.3)  ; Update intervals for changes
-  (setq display-line-numbers-width 2)
 
   ;; Customize the signs in the gutter
   ;; (setq git-gutter:modified-sign "  ")  ; Two spaces for modified lines (change the signs as you prefer)
