@@ -1,12 +1,6 @@
-;; Load path to load third party libs
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/packs"))
-
 ;; Better scroll
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
-
-;; Line numbers
-(setq display-line-numbers-width 2)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -62,13 +56,13 @@
         (filename (buffer-file-name)))
     (if (not filename)
         (message "Buffer '%s' is not visiting a file!" name)
-      (if (get-buffer new-name)
-          (message "A buffer named '%s' already exists!" new-name)
-        (progn
-          (rename-file name new-name 1)
-          (rename-buffer new-name)
-          (set-visited-file-name new-name)
-          (set-buffer-modified-p nil))))))
+	  (if (get-buffer new-name)
+		  (message "A buffer named '%s' already exists!" new-name)
+		(progn
+		  (rename-file name new-name 1)
+		  (rename-buffer new-name)
+		  (set-visited-file-name new-name)
+		  (set-buffer-modified-p nil))))))
 
 ;; ==================================================
 ;; Convert camel case to underscore
@@ -77,18 +71,27 @@
 (defun camel-to-snake () (interactive)
        "Convert camel case to underscore case"
        (progn
-	 (replace-regexp "\\([A-Z]\\)" "_\\1" nil (region-beginning) (region-end))
-	 (downcase-region (region-beginning) (region-end))))
+		 (replace-regexp "\\([A-Z]\\)" "_\\1" nil (region-beginning) (region-end))
+		 (downcase-region (region-beginning) (region-end))))
 
 ;; ==================================================
-;; Python / LSP
+;; LSP MODE
 ;; ==================================================
 
 (use-package lsp-mode
-  :hook ((python-mode . lsp-deferred))   ; non-blocking start-up
   :commands lsp-deferred
+  :hook ((python-mode      . lsp-deferred)
+         (go-mode          . lsp-deferred)
+         (typescript-ts-mode . lsp-deferred)
+         (tsx-ts-mode        . lsp-deferred))
   :custom
-  (lsp-prefer-flymake nil))              ; use flycheck
+  (lsp-idle-delay 0.20)  ;; default 0.5 – snappier hovers
+  (lsp-prefer-flymake nil)
+  (lsp-completion-provider :capf))
+
+;; ==================================================
+;; Python with LSP
+;; ==================================================
 
 (use-package lsp-pyright
   :after lsp-mode
@@ -106,7 +109,7 @@
 
 (use-package exec-path-from-shell
   :init
-  (setq exec-path-from-shell-arguments '("-l" "-i"))
+  (setq exec-path-from-shell-arguments '("-l"))
   (setq exec-path-from-shell-variables '("PATH" "OPENAI_API_KEY"))
   (exec-path-from-shell-initialize))
 
@@ -161,7 +164,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Display continuous lines
-(setq-default truncate-lines 1)
+(setq-default truncate-lines t)
 
 ;; trucate even even when screen is split into multiple windows
 (setq-default truncate-partial-width-windows nil)
@@ -178,7 +181,7 @@
 
 (use-package git-gutter
   :config
-  (setq git-gutter:update-interval 0.3)  ; Update intervals for changes
+  (setq git-gutter:update-interval 0.3 git-gutter:disabled-modes '(org-mode))  ; Update intervals for changes
 
   ;; Customize the signs in the gutter
   ;; (setq git-gutter:modified-sign "  ")  ; Two spaces for modified lines (change the signs as you prefer)
@@ -194,11 +197,11 @@
 (global-git-gutter-mode +1)
 
 ;;===========================================================
-;; Undo tree (https://www.emacswiki.org/emacs/UndoTree)
+;; Undo Fu - https://github.com/emacsmirror/undo-fu
 ;;============================================================
 
-;; (use-package undo-tree) ;; Replaced by undo-fu
 (use-package undo-fu :init (global-set-key [remap undo] #'undo-fu-only-undo))
+(use-package vundo :after undo-fu :bind ("C-x u" . vundo))
 
 ;;============================================================
 ;; Multiple Cursors
@@ -219,6 +222,7 @@
 
 ;; Line numbers
 (global-display-line-numbers-mode 1)
+(setq display-line-numbers-width 2)
 
 (use-package drag-stuff
   :bind (("M-p" . drag-stuff-up)
@@ -271,12 +275,12 @@
         ;; Enable fuzzy matching for all commands except swiper
         ivy-re-builders-alist
         '((swiper . ivy--regex-plus)                        ;; Regular regex matching for swiper
-	  (counsel-M-x . ivy--regex-fuzzy)                  ;; Fuzzy matching for M-x
-	  (counsel-git-grep . ivy--regex-plus)              ;; Regular regex for git grep
-          (counsel-rg . ivy--regex-plus)                    ;; Regular regex for ripgrep
-          (counsel-find-file . ivy--regex-fuzzy)            ;; Fuzzy matching for file names
-          (counsel-projectile-find-file . ivy--regex-fuzzy) ;; Fuzzy for projectile file name
-          (t . ivy--regex-fuzzy))))                         ;; Fuzzy matching for everything else
+		  (counsel-M-x . ivy--regex-fuzzy)                  ;; Fuzzy matching for M-x
+		  (counsel-git-grep . ivy--regex-plus)              ;; Regular regex for git grep
+		  (counsel-rg . ivy--regex-plus)                    ;; Regular regex for ripgrep
+		  (counsel-find-file . ivy--regex-fuzzy)            ;; Fuzzy matching for file names
+		  (counsel-projectile-find-file . ivy--regex-fuzzy) ;; Fuzzy for projectile file name
+		  (t . ivy--regex-fuzzy))))                         ;; Fuzzy matching for everything else
 
 (use-package flx)
 
@@ -312,8 +316,8 @@
         projectile-require-project-root t
         ;; projectile-indexing-method 'alien
         projectile-completion-system 'ivy
-	;; Optionally, exclude specific files globally
-	projectile-globally-ignored-files '("package-lock.json" "poetry.lock")
+		;; Optionally, exclude specific files globally
+		projectile-globally-ignored-files '("package-lock.json" "poetry.lock")
         ))
 
 (use-package counsel-projectile
@@ -351,50 +355,50 @@
 (defun sl/make-header ()
   ""
   (let* ((sl/full-header (abbreviate-file-name buffer-file-name))
-	 (sl/header (file-name-directory sl/full-header))
-	 (sl/drop-str "[...]"))
+		 (sl/header (file-name-directory sl/full-header))
+		 (sl/drop-str "[...]"))
     (if (> (length sl/full-header)
-	   (window-body-width))
-	(if (> (length sl/header)
-	       (window-body-width))
-	    (progn
-	      (concat (with-face sl/drop-str
-				 :background "blue"
-				 :weight 'bold
-				 )
-		      (with-face (substring sl/header
-					    (+ (- (length sl/header)
-						  (window-body-width))
-					       (length sl/drop-str))
-					    (length sl/header))
-				 ;; :background "red"
-				 :weight 'bold
-				 )))
+		   (window-body-width))
+		(if (> (length sl/header)
+			   (window-body-width))
+			(progn
+			  (concat (with-face sl/drop-str
+								 :background "blue"
+								 :weight 'bold
+								 )
+					  (with-face (substring sl/header
+											(+ (- (length sl/header)
+												  (window-body-width))
+											   (length sl/drop-str))
+											(length sl/header))
+								 ;; :background "red"
+								 :weight 'bold
+								 )))
+		  (concat (with-face sl/header
+							 ;; :background "red"
+							 :foreground "#8fb28f"
+							 :weight 'bold
+							 )))
 	  (concat (with-face sl/header
-			     ;; :background "red"
-			     :foreground "#8fb28f"
-			     :weight 'bold
-			     )))
-      (concat (with-face sl/header
-			 ;; :background "green"
-			 ;; :foreground "black"
-			 :weight 'bold
-			 :foreground "#8fb28f"
-			 )
-	      (with-face (file-name-nondirectory buffer-file-name)
-			 :weight 'bold
-			 ;; :background "red"
-			 )))))
+						 ;; :background "green"
+						 ;; :foreground "black"
+						 :weight 'bold
+						 :foreground "#8fb28f"
+						 )
+			  (with-face (file-name-nondirectory buffer-file-name)
+						 :weight 'bold
+						 ;; :background "red"
+						 )))))
 
 (defun sl/display-header ()
   (setq header-line-format
-	'("" ;; invocation-name
-	  (:eval (if (buffer-file-name)
-		     (sl/make-header)
-		   "%b")))))
+		'("" ;; invocation-name
+		  (:eval (if (buffer-file-name)
+					 (sl/make-header)
+				   "%b")))))
 
 (add-hook 'buffer-list-update-hook
-	  'sl/display-header)
+		  'sl/display-header)
 
 ;;============================================================
 ;; Duplicate Line
@@ -435,11 +439,9 @@
         (t                            '(0.5 . 0.5))))
 
 (use-package zoom
-  :init
-  (custom-set-variables '(zoom-mode t))
-  (custom-set-variables
-   '(zoom-size 'size-callback))
-  )
+  :custom
+  (zoom-mode t)
+  (zoom-size 'size-callback))
 
 ;; ==========================================================
 ;; highlight-indentation
@@ -468,7 +470,7 @@
 (use-package company
   :diminish company-mode
   :bind (:map company-active-map
-              ("<tab>" . company-complete-selection))
+			  ("<tab>" . company-complete-selection))
   :hook (after-init . global-company-mode)
   :config
   (setq company-idle-delay 0
@@ -512,11 +514,11 @@
 
 (use-package yasnippet
   :config
-    (yas-reload-all)
-    (yas-global-mode 1)
+  (yas-reload-all)
+  (yas-global-mode 1)
   :init
-    (add-hook 'prog-mode-hook #'yas-minor-mode)
-    :bind (("C-c C-h" . yas-expand)))
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  :bind (("C-c C-h" . yas-expand)))
 
 ;; ==========================================================
 ;; Org Bullets
@@ -528,13 +530,28 @@
 ;; JS things...
 ;; ==========================================================
 
-(use-package nodejs-repl)
+(setq treesit-language-source-alist
+      '((typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+        (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+;; Then run M-x treesit-install-language-grammar and pick
+;;  - typescript
+;;  - tsx
 
-;; Add rjsx-mode for JS and JSX files
-(use-package rjsx-mode
-  :mode ("\\.[jt]sx?\\'" . rjsx-mode)
+;; Optional helper that installs grammars on first run
+(use-package treesit-auto                       ; MELPA
+  :init
+  (setq treesit-auto-install 'prompt)           ; or t to skip prompt
   :config
-  (setq js-indent-level 2))
+  (global-treesit-auto-mode)
+  )
+
+;; Prefer TS/TSX Tree-sitter modes whenever a classic mode is requested
+(dolist (pair '((typescript-mode . typescript-ts-mode)
+                (js-mode         . typescript-ts-mode)
+                (js2-mode        . typescript-ts-mode)))
+  (add-to-list 'major-mode-remap-alist pair))
+
+(use-package nodejs-repl)
 
 ;; use flycheck-verify-setup command to check if eslint is being used
 (use-package flycheck
@@ -544,40 +561,28 @@
 ;; ensuring that flycheck uses the local eslint executable from your project.
 (use-package add-node-modules-path
   :hook ((js-mode . add-node-modules-path)
-         (rjsx-mode . add-node-modules-path)
          (web-mode . add-node-modules-path)))
+
+(add-hook 'typescript-ts-mode-hook #'add-node-modules-path)
+(add-hook 'tsx-ts-mode-hook        #'add-node-modules-path)
 
 (with-eval-after-load 'flycheck
   ;; Disable jshint and jscs checkers as we will use eslint
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
-                        '(javascript-jshint javascript-jscs)))
-  ;; Use eslint with js2-mode
-  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  ;; Use eslint with rjsx-mode
-  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-  ;; Use eslint with web-mode (for JSX files)
-  (flycheck-add-mode 'javascript-eslint 'web-mode))
+                        '(javascript-jshint javascript-jscs))))
 
-(defun my/use-eslint-from-node-modules ()
-  "Use local eslint from node_modules before global."
-  (let ((root (locate-dominating-file
-               (or (buffer-file-name) default-directory)
-               "node_modules")))
-    (when root
-      (let ((eslint (expand-file-name "node_modules/.bin/eslint" root)))
-        (when (file-executable-p eslint)
-          (setq-local flycheck-javascript-eslint-executable eslint))))))
+;; npm i -g typescript-language-server typescript  (once per machine)
 
-(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-
-;; ==========================================================
-;; Typescript
-;; ==========================================================
-
-(use-package typescript-mode
+;; Format with prettier on save
+(use-package apheleia :straight t
   :config
-  (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode)))
+  (setf (alist-get 'tsx-ts-mode apheleia-mode-alist) 'prettier)
+  (setf (alist-get 'typescript-ts-mode apheleia-mode-alist) 'prettier)
+  (apheleia-global-mode +1))
+
+(unless (executable-find "prettier")
+  (message "⚠ prettier not found – no on-save formatting"))
 
 ;; ==========================================================
 ;; GO Things...
@@ -603,24 +608,21 @@
 ;; (use-package pipenv
 ;;   :hook (python-mode . pipenv-mode))
 
-;; Poetry tracking (optional but handy):
-(use-package poetry
-  :hook (python-mode . poetry-tracking-mode))
 
 ;; =========================================================
 ;; Poetry
 ;; =========================================================
 
-;; Use poetry:
-;; (use-package poetry
-;;   :hook (python-mode . poetry-tracking-mode))
+;; Poetry tracking (optional but handy):
+(use-package poetry
+  :hook (python-mode . poetry-tracking-mode))
 
 ;; ==================================================
 ;; Macros
 ;; ==================================================
 
 (fset 'single_quotes
-   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217765 34 return 39 return 33] 0 "%d")) arg)))
+	  (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217765 34 return 39 return 33] 0 "%d")) arg)))
 
 ;; ==================================================
 ;; Using arrows to move over buffers (built-in feature)
@@ -668,47 +670,33 @@
 
 (use-package terraform-mode
   :mode (("\\.tf\\'" . terraform-mode)
-	 )
+		 )
   )
 
 ;; ==================================================
 ;; copilot
 ;; ==================================================
 
-(use-package copilot
-  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
-  :init
-  (add-hook 'prog-mode-hook 'copilot-mode))
+;; (use-package copilot
+;;  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
+;;  :init
+;;  (add-hook 'prog-mode-hook 'copilot-mode))
 
-(with-eval-after-load 'company
-  ;; disable inline previews
-  (delq 'company-preview-if-just-one-frontend company-frontends))
+;;(with-eval-after-load 'company
+;;  ;; disable inline previews
+;;  (delq 'company-preview-if-just-one-frontend company-frontends))
 
-(define-key copilot-completion-map (kbd "C-<return>") 'copilot-accept-completion)
+;; (define-key copilot-completion-map (kbd "C-<return>") 'copilot-accept-completion)
 
 ;; ==================================================
 ;; web-mode
 ;; ==================================================
 
 (use-package web-mode
-  :mode (("\\.tsx\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
+  :mode (("\\.jsx\\'" . web-mode))
   :config
   (setq web-mode-enable-auto-indentation nil) ;; Disable auto indentation
   (setq web-mode-enable-auto-quoting nil))  ; Disable automatic insertion of quotes
-
-;; ==================================================
-;; tide
-;; ==================================================
-
-;; https://github.com/ananthakumaran/tide
-(use-package tide
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)) ;; Indentation on save, if you want to disable it, just comment this line
-  :config
-  (setq tide-format-options '(:indentSize 2 :tabSize 2)))
 
 ;; ==================================================
 ;; org-ai
