@@ -591,14 +591,10 @@
 ;; ==========================================================
 
 (use-package go-mode
-  :hook (before-save . gofmt-before-save)
-  :config
-  (setq tab-width 4
-        indent-tabs-mode 1))
+  :hook ((go-mode . lsp-deferred)
+         (before-save . gofmt-before-save))
+  :custom (tab-width 4))
 
-(use-package lsp-mode
-  :hook (go-mode . lsp)
-  :commands lsp)
 
 ;; =========================================================
 ;; Dockerfile mode
