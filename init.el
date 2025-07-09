@@ -1,3 +1,6 @@
+;; Disable package.el in favor of straight.el
+(setq package-enable-at-startup nil)
+
 ;; Load path to load third party libs
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/packs"))
 
@@ -25,6 +28,27 @@
 (put 'narrow-to-region 'disabled nil)
 
 ;; (setq default-input-method "portuguese-prefix")
+
+;; ==================================================
+;; Adding straight
+;; ==================================================
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(use-package straight
+  :custom
+  (straight-use-package-by-default t))
 
 ;; ==================================================
 ;; renaming files and buffers
@@ -57,37 +81,18 @@
 	 (downcase-region (region-beginning) (region-end))))
 
 ;; ==================================================
-;; Adding straight
-;; ==================================================
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-;; ==================================================
 ;; Python
 ;; ==================================================
 
 ;; Add lsp-mode and lsp-pyright:
 ;; Use lsp-describe-session (M-x lsp-describe-session) to check the current session
 (use-package lsp-mode
-  :straight t
   :hook (python-mode . lsp)
   :commands lsp
   :config
   (setq lsp-prefer-flymake nil))  ; Use flycheck instead of flymake
 
 (use-package lsp-pyright
-  :straight t
   :after lsp-mode
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
@@ -105,7 +110,6 @@
 ;; ==========================================================
 
 (use-package exec-path-from-shell
-  :straight t
   :init
   ;; (setq exec-path-from-shell-check-startup-files nil)
   ;; (setq exec-path-from-shell-arguments '("-l"))
@@ -183,8 +187,6 @@
 ;;============================================================
 
 (use-package git-gutter
-  :straight t
-
   :config
   (setq git-gutter:update-interval 2)  ; Update intervals for changes
   (setq display-line-numbers-width 2)
@@ -206,16 +208,13 @@
 ;; Undo tree (https://www.emacswiki.org/emacs/UndoTree)
 ;;============================================================
 
-(use-package undo-tree
-  :straight t
-  )
+(use-package undo-tree)
 
 ;;============================================================
 ;; Multiple Cursors
 ;;============================================================
 
 (use-package multiple-cursors
-  :straight t
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-c C-w" . mc/mark-all-like-this))
@@ -232,12 +231,10 @@
 (global-display-line-numbers-mode 1)
 
 (use-package drag-stuff
-  :straight t
   :bind (("M-p" . drag-stuff-up)
          ("M-n" . drag-stuff-down)))
 
 (use-package expand-region
-  :straight t
   :bind (("C-M-SPC" . er/expand-region)
          ("C-+" . er/contract-region))
   )
@@ -247,7 +244,6 @@
 ;; (use-package solarized-theme :ensure t :init (load-theme 'solarized-dark :no-confirm))
 ;; (use-package monokai-theme :ensure t :init (load-theme 'monokai :no-confirm))
 (use-package material-theme
-  :straight t
   :init (load-theme 'material :no-confirm))
 
 ;; ==========================================================
@@ -255,7 +251,6 @@
 ;; ==========================================================
 
 (use-package counsel
-  :straight t
   :after ivy
   :config (counsel-mode 1))
 
@@ -268,7 +263,6 @@
 (global-set-key (kbd "C-c p s g") 'counsel-rg)
 
 (use-package ivy
-  :straight t
   :diminish (ivy-mode)
   :bind (("C-:" . avy-goto-char)
          ("C-x b" . ivy-switch-buffer)
@@ -294,11 +288,9 @@
           (counsel-projectile-find-file . ivy--regex-fuzzy) ;; Fuzzy for projectile file name
           (t . ivy--regex-fuzzy))))                         ;; Fuzzy matching for everything else
 
-(use-package flx
-  :straight t)
+(use-package flx)
 
 (use-package swiper
-  :straight t
   :bind (("C-s" . swiper)))
 
 ;; ==========================================================
@@ -306,7 +298,6 @@
 ;; ==========================================================
 
 (use-package yaml-mode
-  :straight t
   :init
   :mode ("\\.yml$" . yaml-mode))
 
@@ -318,7 +309,6 @@
 (setq projectile-keymap-prefix (kbd "C-c p"))
 
 (use-package projectile
-  :straight t
   :init
   (projectile-global-mode t)
   :config
@@ -337,7 +327,6 @@
         ))
 
 (use-package counsel-projectile
-  :straight t
   :config (counsel-projectile-mode))
 
 ;; ==================================================
@@ -345,7 +334,6 @@
 ;; ==================================================
 
 (use-package smartparens
-  :straight t
   :diminish smartparens-mode
   :config
   (progn
@@ -357,7 +345,6 @@
 ;;============================================================
 
 (use-package magit
-  :straight t
   :bind ("C-x g" . magit-status))
 
 ;;===========================================================
@@ -458,7 +445,6 @@
         (t                            '(0.5 . 0.5))))
 
 (use-package zoom
-  :straight t
   :init
   (custom-set-variables '(zoom-mode t))
   (custom-set-variables
@@ -472,7 +458,6 @@
 ;; ==========================================================
 
 (use-package highlight-indent-guides
-  :straight t
   :hook (prog-mode . highlight-indent-guides-mode)
   :config
   (setq highlight-indent-guides-method 'character))
@@ -482,7 +467,6 @@
 ;; ==========================================================
 
 (use-package which-key
-  :straight t
   :diminish which-key-mode
   :init
   (which-key-mode)
@@ -494,7 +478,6 @@
 ;; ==========================================================
 
 (use-package company
-  :straight t
   :diminish company-mode
   :bind (:map company-active-map
               ("<tab>" . company-complete-selection))
@@ -508,23 +491,19 @@
   (define-key company-active-map (kbd "C-<return>") nil))
 
 (use-package company-box
-  :straight t
   :hook (company-mode . company-box-mode))
 
 ;; ==========================================================
 ;; Protobuffer
 ;; ==========================================================
 
-(use-package protobuf-mode
-  :straight t
-  )
+(use-package protobuf-mode)
 
 ;; ==========================================================
 ;; Editor config
 ;; ==========================================================
 
 (use-package editorconfig
-  :straight t
   :config
   (editorconfig-mode 1)
   )
@@ -534,7 +513,6 @@
 ;; ==========================================================
 
 (use-package textmate
-  :straight t
   :init
   (textmate-mode)
   :config
@@ -545,7 +523,6 @@
 ;; ==========================================================
 
 (use-package yasnippet
-  :straight t
   :config
     (yas-reload-all)
     (yas-global-mode 1)
@@ -557,34 +534,27 @@
 ;; Org Bullets
 ;; ==========================================================
 
-(use-package org-bullets
-  :straight t
-  )
+(use-package org-bullets)
 
 ;; ==========================================================
 ;; JS things...
 ;; ==========================================================
 
-(use-package nodejs-repl
-  :straight t
-  )
+(use-package nodejs-repl)
 
 ;; Add rjsx-mode for JS and JSX files
 (use-package rjsx-mode
-  :straight t
   :mode ("\\.[jt]sx?\\'" . rjsx-mode)
   :config
   (setq js-indent-level 2))
 
 ;; use flycheck-verify-setup command to check if eslint is being used
 (use-package flycheck
-  :straight t
   :init (global-flycheck-mode))
 
 ;; This package automatically adds node_modules/.bin to my exec-path in Emacs,
 ;; ensuring that flycheck uses the local eslint executable from your project.
 (use-package add-node-modules-path
-  :straight t
   :hook ((js-mode . add-node-modules-path)
          (rjsx-mode . add-node-modules-path)
          (web-mode . add-node-modules-path)))
@@ -618,7 +588,6 @@
 ;; ==========================================================
 
 (use-package typescript-mode
-  :straight t
   :config
   (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode)))
 
@@ -627,14 +596,12 @@
 ;; ==========================================================
 
 (use-package go-mode
-  :straight t
   :hook (before-save . gofmt-before-save)
   :config
   (setq tab-width 4
         indent-tabs-mode 1))
 
 (use-package lsp-mode
-  :straight t
   :hook (go-mode . lsp)
   :commands lsp)
 
@@ -642,9 +609,7 @@
 ;; Dockerfile mode
 ;; =========================================================
 
-(use-package dockerfile-mode
-  :straight t
-  )
+(use-package dockerfile-mode)
 
 ;; =========================================================
 ;; Pipenv
@@ -652,7 +617,6 @@
 
 (use-package pipenv
   :hook (python-mode . pipenv-mode)
-  :straight t
   :init
   (setq
    pipenv-projectile-after-switch-function
@@ -664,7 +628,6 @@
 
 ;; Use poetry:
 ;; (use-package poetry
-;;   :straight t
 ;;   :hook (python-mode . poetry-tracking-mode))
 
 ;; ==================================================
@@ -695,7 +658,6 @@
     (treemacs-select-window)))
 
 (use-package treemacs-projectile
-  :straight t
   ;; :after (treemacs projectile)
   :bind
   ("M-0" . treemacs-display-current-project-exclusively)
@@ -711,7 +673,6 @@
 ;; ==================================================
 
 (use-package markdown-mode
-  :straight t
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)))
@@ -721,7 +682,6 @@
 ;; ==================================================
 
 (use-package terraform-mode
-  :straight t
   :mode (("\\.tf\\'" . terraform-mode)
 	 )
   )
@@ -746,7 +706,6 @@
 ;; ==================================================
 
 (use-package web-mode
-  :straight t
   :mode (("\\.tsx\\'" . web-mode)
          ("\\.jsx\\'" . web-mode))
   :config
@@ -759,7 +718,6 @@
 
 ;; https://github.com/ananthakumaran/tide
 (use-package tide
-  :straight t
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . tide-setup)
          (typescript-mode . tide-hl-identifier-mode)
@@ -774,7 +732,6 @@
 (setq org-ai-openai-api-token (getenv "OPENAI_API_KEY"))
 
 (use-package org-ai
-  :straight t
   :commands (org-ai-mode
              org-ai-global-mode)
   :init
@@ -788,14 +745,12 @@
 ;; Doom modeline
 ;; ==================================================
 
-;; (use-package nerd-icons
-;;   :straight t)
+;; (use-package nerd-icons)
 
 (use-package all-the-icons
   ;; :straight (:host github
   ;;            :repo "domtronn/all-the-icons.el"
   ;;            :commit "52d1f2d")  ;; Replace <commit-hash> with the hash for version 3.4.0
-  :straight t
   :commands (nerd-icons-octicon
              nerd-icons-faicon
              nerd-icons-flicon
@@ -811,7 +766,6 @@
 ;; https://github.com/seagle0128/doom-modeline
 
 (use-package doom-modeline
-  :straight t
   :init
   (doom-modeline-mode 1)
   :config
