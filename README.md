@@ -1,123 +1,90 @@
 # My Emacs Config
 
-An advanced and feature-rich Emacs configuration designed to enhance your development workflow that I've been building over the years. This setup leverages modern Emacs packages for better performance, improved navigation, enhanced coding experience, and seamless integrations across various programming languages.
+An advanced and evolving Emacs configuration that stream‑lines everyday development across Python, JS/TS, Go and more.  It mixes modern Tree‑sitter modes, LSP back‑ends, and UI niceties while staying **vanilla‑Emacs‑first** so you can cherry‑pick what you like.
+
+> **Obs.** This setup assumes **`zsh`** is your login shell.  Your NVM initialisation must live in `~/.zprofile` (not just `~/.zshrc`) so GUI‑launched Emacs can inherit `PATH`, `NVM_DIR`, etc.
 
 ![image](https://github.com/user-attachments/assets/78528fce-d285-4353-b3a6-9980729c7761)
 
-## Features
+## ✨ Highlights
 
-- **Modern Interface and Navigation**:
-  - **`ivy` and `counsel`**: Provides a powerful interface for file and buffer switching, command execution, and more, with fuzzy searching enabled.
-  - **`avy`**: Quickly jump to any visible text in Emacs, replacing `ace-jump-mode`.
-  - **`doom-modeline`**: A sleek and modern modeline that provides rich contextual information such as buffer status, Git branch, LSP status, and more.
-  - **`which-key`**: Discover available keybindings on-the-fly.
+### Modern interface & navigation
 
-- **Enhanced Coding Experience**:
-  - **`company-mode`**: A robust, context-aware auto-completion framework, with `company-box` for an enhanced UI.
-  - **`yasnippet`**: Snippet support for faster coding.
-  - **`flycheck`**: On-the-fly syntax checking for various languages.
-  - **`git-gutter`**: Visualize git changes directly in the editor.
-  - **`multiple-cursors`**: Edit text in multiple places simultaneously.
+* **`ivy`**\*\* / ****`counsel`**** / \*\***`flx`** – fuzzy search for commands, files and buffers.
+* **`avy`** – instant navigation to visible text.
+* **`doom-modeline`** – clean, informative modeline with LSP and Git status.
+* **`which-key`** – discover keybindings on the fly.
+* **`zoom`** – Goldilocks window resizing.
 
-- **Language Support**:
-  - **Python**:
-    - `lsp-mode` and `lsp-pyright` for advanced code intelligence (commented out for future activation).
-    - Virtual environment management with `pipenv`.
-  - **JavaScript and TypeScript**:
-    - `web-mode` and `tide` for comprehensive support, including JSX, TSX, and more.
-  - **Go**:
-    - Integrated Go tools with `go-mode`.
-  - **Markdown, YAML, Dockerfile, Terraform**:
-    - Syntax highlighting and editing enhancements for common file formats.
-  - **Org Mode**:
-    - AI-enhanced editing with `org-ai`.
+### Coding experience
 
-- **Productivity and Visual Enhancements**:
-  - **`material-theme`**: A modern and visually appealing theme.
-  - **`highlight-indent-guides`**: Visualize code indentation levels.
-  - **`zoom`**: Intelligent window resizing for an optimal editing experience.
-  - **`swiper`**: Enhanced in-buffer searching with regex matching.
-  - **`drag-stuff`**: Easily move lines or regions up and down.
+* **`lsp-mode`** with language‑specific servers (Pyright, typescript‑language‑server, gopls).
+* **Tree‑sitter major modes** (`typescript‑ts‑mode`, `tsx‑ts‑mode`) for blazing‑fast JS/TS highlighting.
+* **`company`**\*\* + \*\***`company‑box`** – zero‑lag completions.
+* **`yasnippet`** – snippet expansion.
+* **`flycheck`** – on‑the‑fly diagnostics, including ESLint via local `node_modules/`.
+* **`git-gutter`** – live diff in the fringe.
+* **`multiple-cursors`**, **`drag-stuff`**, **`expand-region`** – edit at warp speed.
+* **GitHub Copilot** via `copilot.el` (device‑code auth, uses NVM’s Node).
 
-- **Other Utilities**:
-  - **`editorconfig`**: Consistent coding styles across various editors.
-  - **`smartparens`**: Smart management of parentheses and other paired characters.
-  - **`exec-path-from-shell`**: Ensures Emacs inherits the correct environment variables.
+### Language support
 
-## Installation on macOS
+* **Python** – Pyright LSP, Poetry env detection.
+* **JavaScript / TypeScript** – TS/TSX Tree‑sitter modes, ESLint, Prettier via Apheleia.
+* **Go** – `go-mode` + `gopls`.
+* **Markdown / YAML / Dockerfile / Terraform** – dedicated modes.
+* **Org‑mode AI** – `org-ai` brings GPT inside Org buffers.
 
-Install Emacs using Homebrew with the latest options for a native macOS experience:
+### Visual polish & ergonomics
 
-```bash
-brew install --cask emacs
-```
+* **`material-theme`** plus highlight‑indent‑guides.
+* Smartparens, undo‑fu + vundo visual tree.
+* Header‑line breadcrumb showing truncated path.
 
-## How to Install This Config
+## 🛠 Installation
 
-Clone this repository into your `~/.emacs.d` directory:
+### 1 · Clone the repo
 
 ```bash
 git clone git@github.com:alissonperez/emacs-conf.git ~/.emacs.d
 ```
 
-## List of Libraries
+### 2 · Install Emacs 29+
 
-Here is a complete list of the libraries included in this configuration:
+```bash
+brew install --cask emacs  # macOS example
+```
 
-- **Core Enhancements**:
-  - `ivy`
-  - `counsel`
-  - `swiper`
-  - `avy`
-  - `doom-modeline`
-  - `which-key`
-  - `flx`
+### 3 · Zsh & NVM setup
 
-- **Coding and Editing**:
-  - `company`
-  - `company-box`
-  - `yasnippet`
-  - `flycheck`
-  - `git-gutter`
-  - `multiple-cursors`
-  - `smartparens`
-  - `drag-stuff`
-  - `highlight-indent-guides`
-  - `zoom`
+```zsh
+# ~/.zprofile – ensure GUI Emacs inherits Node
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+```
 
-- **Language Support**:
-  - **Python**:
-    - `lsp-mode` (commented out for future activation)
-    - `lsp-pyright` (commented out for future activation)
-    - `pipenv`
-  - **JavaScript/TypeScript**:
-    - `web-mode`
-    - `tide`
-    - `js2-mode`
-    - `nodejs-repl`
-  - **Go**:
-    - `go-mode`
-  - **Markdown/YAML/Dockerfile/Terraform**:
-    - `markdown-mode`
-    - `yaml-mode`
-    - `dockerfile-mode`
-    - `terraform-mode`
-  - **Org Mode**:
-    - `org-ai`
+Then inside Emacs run:
 
-- **Version Control**:
-  - `magit`
+```text
+M-x copilot-install-server RET
+M-x copilot-login RET
+```
 
-- **Other Utilities**:
-  - `exec-path-from-shell`
-  - `editorconfig`
-  - `textmate`
-  - `protobuf-mode`
+## 📦 Package roster (core)
 
-- **Appearance**:
-  - `material-theme`
-  - `doom-modeline`
+| Category        | Packages                                                                                                                                                                   |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI / Navigation | ivy, counsel, swiper, flx, avy, doom-modeline, which-key, zoom                                                                                                             |
+| Editing         | company, company-box, yasnippet, flycheck, git-gutter, multiple-cursors, smartparens, drag-stuff, expand-region, highlight-indent-guides, undo-fu, vundo                   |
+| Languages       | lsp-mode, lsp-pyright, go-mode, typescript-ts-mode, tsx-ts-mode, web-mode (for JSX), nodejs-repl, markdown-mode, yaml-mode, dockerfile-mode, terraform-mode, protobuf-mode |
+| Tooling         | exec-path-from-shell, editorconfig, magit, projectile, counsel-projectile, treemacs, git-gutter                                                                            |
+| AI              | copilot.el, org-ai                                                                                                                                                         |
+| Appearance      | material-theme, nerd-icons                                                                                                                                                 |
 
-## Usage
+## 🚀 Usage tips
 
-This configuration is designed to be used as-is, but it's also highly customizable. Feel free to fork and adapt it to suit your personal workflow. For detailed usage instructions and keybindings, refer to the individual package documentation.
+* `M-x lsp-describe-session` – inspect active LSP workspaces.
+* `C-S-d` duplicates the current line; `M-p / M-n` drags it.
+* `C-x u` launches **vundo** visual undo tree.
+
+Fork away and tailor to your workflow!  PRs and suggestions welcome.
