@@ -110,7 +110,8 @@
 (use-package exec-path-from-shell
   :init
   (setq exec-path-from-shell-arguments '("-l"))
-  (setq exec-path-from-shell-variables '("PATH" "OPENAI_API_KEY"))
+  (setq exec-path-from-shell-variables '("PATH" "OPENAI_API_KEY" "NVM_DIR"))
+  (setq exec-path-from-shell-shell-name "zsh")
   (exec-path-from-shell-initialize))
 
 ;; To check which shell is being used
@@ -677,14 +678,17 @@
 ;; copilot
 ;; ==================================================
 
-;; (use-package copilot
-;;  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
-;;  :init
-;;  (add-hook 'prog-mode-hook 'copilot-mode))
-
-;;(with-eval-after-load 'company
-;;  ;; disable inline previews
-;;  (delq 'company-preview-if-just-one-frontend company-frontends))
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+  :ensure t
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+			  ("C-<return>" . copilot-accept-completion))
+  :config
+  ;; disable company inline previews to avoid overlap
+  (with-eval-after-load 'company
+    (delq 'company-preview-if-just-one-frontend company-frontends))
+  )
 
 ;; (define-key copilot-completion-map (kbd "C-<return>") 'copilot-accept-completion)
 
