@@ -113,7 +113,7 @@
   :init
   ;; (setq exec-path-from-shell-check-startup-files nil)
   ;; (setq exec-path-from-shell-arguments '("-l"))
-  (setq exec-path-from-shell-arguments '("-l" "-i")) ;; Use this if needed
+  (setq exec-path-from-shell-arguments '("-i")) ;; Use this if needed
   (setq exec-path-from-shell-variables '("PATH" "OPENAI_API_KEY"))
   (exec-path-from-shell-initialize))
 
