@@ -49,7 +49,7 @@ An advanced and feature-rich Emacs configuration designed to enhance your develo
 Install Emacs using Homebrew with the latest options for a native macOS experience:
 
 ```bash
-brew install emacs --use-git-head --cocoa --srgb
+brew install --cask emacs
 ```
 
 ## How to Install This Config
