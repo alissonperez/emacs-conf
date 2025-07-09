@@ -81,29 +81,24 @@
 	 (downcase-region (region-beginning) (region-end))))
 
 ;; ==================================================
-;; Python
+;; Python / LSP
 ;; ==================================================
 
-;; Add lsp-mode and lsp-pyright:
-;; Use lsp-describe-session (M-x lsp-describe-session) to check the current session
 (use-package lsp-mode
-  :hook (python-mode . lsp)
-  :commands lsp
-  :config
-  (setq lsp-prefer-flymake nil))  ; Use flycheck instead of flymake
+  :hook ((python-mode . lsp-deferred))   ; non-blocking start-up
+  :commands lsp-deferred
+  :custom
+  (lsp-prefer-flymake nil))              ; use flycheck
 
 (use-package lsp-pyright
   :after lsp-mode
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp))))
+  :custom
+  ;; Tell Pyright where Poetry stores its virtualenvs; auto-detection
+  ;; will then Just Work for each project.
+  (lsp-pyright-venv-path
+   (expand-file-name "~/.cache/pypoetry/virtualenvs")))
 
-(defun use-current-project-poetry-venv ()
-  (interactive)
-  (let ((venv (shell-command-to-string "poetry env info -p")))
-    (setq lsp-pyright-venv-path (string-trim venv))))
-
-(add-hook 'python-mode-hook #'use-current-project-poetry-venv)
+;; No manual “poetry env info -p” hook needed; Pyright now finds the env.
 
 ;; ==========================================================
 ;; Exec path from shell (https://github.com/purcell/exec-path-from-shell)
@@ -615,12 +610,13 @@
 ;; Pipenv
 ;; =========================================================
 
-(use-package pipenv
-  :hook (python-mode . pipenv-mode)
-  :init
-  (setq
-   pipenv-projectile-after-switch-function
-   'pipenv-projectile-after-switch-extended))
+;; Uncomment only for legacy Pipenv projects (keep disabled by default)
+;; (use-package pipenv
+;;   :hook (python-mode . pipenv-mode))
+
+;; Poetry tracking (optional but handy):
+(use-package poetry
+  :hook (python-mode . poetry-tracking-mode))
 
 ;; =========================================================
 ;; Poetry
