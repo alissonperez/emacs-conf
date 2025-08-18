@@ -43,19 +43,25 @@ An advanced and evolving Emacs configuration that stream‑lines everyday develo
 
 ## 🛠 Installation
 
-### 1 · Clone the repo
+### Clone the repo
 
 ```bash
 git clone git@github.com:alissonperez/emacs-conf.git ~/.emacs.d
 ```
 
-### 2 · Install Emacs 29+
+### Install Emacs 30+
 
 ```bash
 brew install --cask emacs  # macOS example
 ```
 
-### 3 · Zsh & NVM setup
+### Install ripgrep
+
+```bash
+brew install ripgrep
+```
+
+### Zsh & NVM setup
 
 ```zsh
 # ~/.zprofile – ensure GUI Emacs inherits Node

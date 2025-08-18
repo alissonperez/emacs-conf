@@ -77,6 +77,7 @@
 		 (replace-regexp "\\([A-Z]\\)" "_\\1" nil (region-beginning) (region-end))
 		 (downcase-region (region-beginning) (region-end))))
 
+
 ;; ==================================================
 ;; LSP MODE
 ;; ==================================================
@@ -248,23 +249,28 @@
 ;; IVY (replaces ace-jump)
 ;; ==========================================================
 
-(use-package counsel
-  :after ivy
-  :config (counsel-mode 1))
+(use-package avy)
 
 ;; Disable ido-mode if it's enabled
 (ido-mode -1)
 
-;; Use counsel-find-file for C-x C-f
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
 ;; replace C-c p s g (original counsel-projectile-grep, by counsel-rg)
 (global-set-key (kbd "C-c p s g") 'counsel-rg)
 
 (use-package ivy
   :diminish (ivy-mode)
+  :init (ivy-mode 1)
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-count-format "(%d/%d) ")
+  (ivy-wrap t)
+  (ivy-re-builders-alist
+   '((swiper . ivy--regex-plus)
+     (counsel-find-file . ivy--regex-fuzzy)
+     (counsel-projectile-find-file . ivy--regex-fuzzy)
+     (t . ivy--regex-fuzzy)))
   :bind (("C-:" . avy-goto-char)
          ("C-x b" . ivy-switch-buffer)
-         ("C-x C-f" . counsel-find-file)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)  ;; Use 'ivy-alt-done' to enter directories
          ("RET" . ivy-done)  ;; Use 'ivy-done' to enter directories in dired mode
@@ -286,10 +292,12 @@
 		  (counsel-projectile-find-file . ivy--regex-fuzzy) ;; Fuzzy for projectile file name
 		  (t . ivy--regex-fuzzy))))                         ;; Fuzzy matching for everything else
 
-(use-package flx)
+;; Um único bind para find-file já basta:
+(global-set-key (kbd "C-x C-f") #'counsel-find-file)
 
-(use-package swiper
-  :bind (("C-s" . swiper)))
+(use-package counsel :after ivy :config (counsel-mode 1))
+(use-package swiper  :after ivy :bind (("C-s" . swiper)))
+(use-package flx)
 
 ;; ==========================================================
 ;; YAML-MODE
@@ -297,32 +305,25 @@
 
 (use-package yaml-mode
   :init
-  :mode ("\\.yml$" . yaml-mode))
+  :mode
+  ("\\.ya?ml$" . yaml-mode)
+  ("Aioros" . yaml-mode)
+  )
 
 ;;===========================================================
 ;; Projectile
 ;;============================================================
 
-;; Need to be "setted" before load projectile
-(setq projectile-keymap-prefix (kbd "C-c p"))
-
 (use-package projectile
-  :init
-  (projectile-global-mode t)
-  :config
-  (setq projectile-enable-caching t
-        projectile-use-git-grep t
-        projectile-switch-project-action 'projectile-dired
-        projectile-require-project-root nil
-        projectile-mode-line '(:eval (format " P[%s]" (projectile-project-name)))
-        ;; projectile-completion-system 'grizzl
-        ;; projectile-completion-system 'helm
-        projectile-require-project-root t
-        ;; projectile-indexing-method 'alien
-        projectile-completion-system 'ivy
-		;; Optionally, exclude specific files globally
-		projectile-globally-ignored-files '("package-lock.json" "poetry.lock")
-        ))
+  :diminish projectile-mode
+  :init (projectile-mode +1)
+  :custom
+  (projectile-enable-caching t)
+  (projectile-switch-project-action #'projectile-dired)
+  (projectile-require-project-root t)
+  (projectile-completion-system 'ivy)
+  (projectile-globally-ignored-files '("package-lock.json" "poetry.lock"))
+  :bind-keymap ("C-c p" . projectile-command-map))
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
@@ -409,21 +410,21 @@
 ;;============================================================
 
 (defun duplicate-current-line (&optional n)
-  "duplicate current line, make more than 1 copy given a numeric argument"
+  "Duplica a linha atual N vezes (padrão 1)."
   (interactive "p")
-  (save-excursion
-    (let ((nb (or n 1))
-    	  (current-line (thing-at-point 'line)))
-      ;; when on last line, insert a newline first
-      (when (or (= 1 (forward-line 1)) (eq (point) (point-max)))
-    	(insert "\n"))
+  (let* ((n (or n 1))
+         (bol (line-beginning-position))
+         (eol (line-end-position))
+         (line (buffer-substring-no-properties bol eol)))
+    (save-excursion
+      (goto-char eol)
+      (open-line n)
+      (dotimes (_ n)
+        (forward-line 1)
+        (insert line)))))
 
-      ;; now insert as many time as requested
-      (while (> n 0)
-    	(insert current-line)
-    	(decf n)))))
 
-(global-set-key (kbd "C-S-d") 'duplicate-current-line)
+(global-set-key (kbd "C-S-d") #'duplicate-current-line)
 
 ;;===========================================================
 ;; General shortcuts
@@ -528,23 +529,33 @@
 ;; Org Bullets
 ;; ==========================================================
 
-(use-package org-bullets)
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode))
 
 ;; ==========================================================
 ;; JS things...
 ;; ==========================================================
 
+;; Onde os .so/.dylib de grammars ficam
+(setq treesit-extra-load-path
+      (list (expand-file-name "tree-sitter" user-emacs-directory)))
+
 (setq treesit-language-source-alist
       '((typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+        (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+        (bash       "https://github.com/tree-sitter/tree-sitter-bash" "master" "src")
+		))
+
 ;; Then run M-x treesit-install-language-grammar and pick
 ;;  - typescript
 ;;  - tsx
+;;  - bash
 
 ;; Optional helper that installs grammars on first run
 (use-package treesit-auto                       ; MELPA
   :init
-  (setq treesit-auto-install 'prompt)           ; or t to skip prompt
+  ;; (setq treesit-auto-install 'prompt)           ; or t to skip prompt
+  (setq treesit-auto-install t)
   :config
   (global-treesit-auto-mode)
   )
@@ -641,6 +652,12 @@
 ;; https://github.com/Alexander-Miller/treemacs
 ;; ==================================================
 
+(use-package treemacs
+  :defer t
+  :custom
+  (treemacs-is-never-other-window t)
+  (treemacs-width 55))
+
 ;; treemacs func to toggle treemacs-select-window and quit (q key) if treemacs is current buffer
 (defun treemacs-toggle ()
   (interactive)
@@ -649,7 +666,7 @@
     (treemacs-select-window)))
 
 (use-package treemacs-projectile
-  ;; :after (treemacs projectile)
+  :after (treemacs projectile)
   :bind
   ("M-0" . treemacs-display-current-project-exclusively)
 
@@ -732,7 +749,11 @@
 (use-package doom-modeline
   :init
   (doom-modeline-mode 1)
-  :custom (doom-modeline-icon t)
+  :custom
+  (doom-modeline-icon t)
+  (doom-modeline-height 25)
+  (doom-modeline-lsp t)
+  (doom-modeline-buffer-file-name-style 'truncate-except-project)
   :config
   ;; Customize settings here
   (setq doom-modeline-height 25)                ;; Set the height of the modeline

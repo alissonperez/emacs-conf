@@ -42,3 +42,4 @@ projects
 .cache/
 .emacs.desktop*
 .lsp-session*
+tree-sitter/
