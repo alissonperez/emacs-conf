@@ -48,21 +48,24 @@
 ;; renaming files and buffers
 ;; ==================================================
 
+
 ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+;; with improvements from GPT-5
 (defun rename-file-and-buffer (new-name)
-  "Renames both current buffer and file it's visiting to NEW-NAME."
+  "Renomeia o arquivo visitado e o buffer para NEW-NAME no mesmo diretório."
   (interactive "sNew name: ")
-  (let ((name (buffer-name))
-        (filename (buffer-file-name)))
-    (if (not filename)
-        (message "Buffer '%s' is not visiting a file!" name)
-	  (if (get-buffer new-name)
-		  (message "A buffer named '%s' already exists!" new-name)
-		(progn
-		  (rename-file name new-name 1)
-		  (rename-buffer new-name)
-		  (set-visited-file-name new-name)
-		  (set-buffer-modified-p nil))))))
+  (let* ((filename (buffer-file-name)))
+    (unless filename
+      (user-error "Buffer não está visitando um arquivo"))
+    (let* ((dir (file-name-directory filename))
+           (new-path (expand-file-name new-name dir)))
+      (when (get-buffer new-name)
+        (user-error "Já existe um buffer chamado %s" new-name))
+      (when (file-exists-p new-path)
+        (user-error "Já existe um arquivo chamado %s" new-path))
+      (rename-file filename new-path 1)
+      (set-visited-file-name new-path t t)
+      (rename-buffer (file-name-nondirectory new-path)))))
 
 ;; ==================================================
 ;; Convert camel case to underscore
@@ -263,8 +266,8 @@
          ("C-x b" . ivy-switch-buffer)
          ("C-x C-f" . counsel-find-file)
          :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("RET" . ivy-alt-done)  ;; Use 'ivy-alt-done' to enter directories
+         ("TAB" . ivy-alt-done)  ;; Use 'ivy-alt-done' to enter directories
+         ("RET" . ivy-done)  ;; Use 'ivy-done' to enter directories in dired mode
          ("C-l" . ivy-alt-done)
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line))
