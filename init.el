@@ -12,16 +12,17 @@
  '(magit-commit-arguments '("--gpg-sign=A41BF0ECF08B6764"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages nil)
- '(python-shell-exec-path nil)
- '(pyvenv-exec-shell "/bin/zsh")
- '(pyvenv-tracking-ask-before-change t)
- '(zoom-mode t nil (zoom))
- '(zoom-size 'size-callback))
+ '(python-shell-exec-path nil))
 
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 
-;; (setq default-input-method "portuguese-prefix")
+
+;; ==================================================
+;; Pequeno ganho de responsividade (LSP/TS)
+;; ==================================================
+(setq read-process-output-max (* 4 1024 1024)) ; 4MB
+(setq gc-cons-threshold (* 128 1024 1024))     ; 128MB
 
 ;; ==================================================
 ;; Adding straight
@@ -114,9 +115,11 @@
 (use-package exec-path-from-shell
   :init
   (setq exec-path-from-shell-arguments '("-l"))
-  (setq exec-path-from-shell-variables '("PATH" "OPENAI_API_KEY" "NVM_DIR"))
+  (setq exec-path-from-shell-variables
+		'("PATH" "OPENAI_API_KEY" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL"))
   (setq exec-path-from-shell-shell-name "zsh")
   (exec-path-from-shell-initialize))
+
 
 ;; To check which shell is being used
 ;; (shell-command-to-string "echo $SHELL")
@@ -258,7 +261,7 @@
 (global-set-key (kbd "C-c p s g") 'counsel-rg)
 
 (use-package ivy
-  :diminish (ivy-mode)
+  :diminish ivy-mode
   :init (ivy-mode 1)
   :custom
   (ivy-use-virtual-buffers t)
@@ -272,25 +275,12 @@
   :bind (("C-:" . avy-goto-char)
          ("C-x b" . ivy-switch-buffer)
          :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)  ;; Use 'ivy-alt-done' to enter directories
-         ("RET" . ivy-done)  ;; Use 'ivy-done' to enter directories in dired mode
+         ("TAB" . ivy-alt-done)
+         ("RET" . ivy-done)
          ("C-l" . ivy-alt-done)
          ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-        ivy-count-format "(%d/%d) "
-        ivy-wrap t
-        ;; Enable fuzzy matching for all commands except swiper
-        ivy-re-builders-alist
-        '((swiper . ivy--regex-plus)                        ;; Regular regex matching for swiper
-		  (counsel-M-x . ivy--regex-fuzzy)                  ;; Fuzzy matching for M-x
-		  (counsel-git-grep . ivy--regex-plus)              ;; Regular regex for git grep
-		  (counsel-rg . ivy--regex-plus)                    ;; Regular regex for ripgrep
-		  (counsel-find-file . ivy--regex-fuzzy)            ;; Fuzzy matching for file names
-		  (counsel-projectile-find-file . ivy--regex-fuzzy) ;; Fuzzy for projectile file name
-		  (t . ivy--regex-fuzzy))))                         ;; Fuzzy matching for everything else
+         ("C-k" . ivy-previous-line)))
+
 
 ;; Um único bind para find-file já basta:
 (global-set-key (kbd "C-x C-f") #'counsel-find-file)
@@ -483,7 +473,10 @@
         company-show-numbers t))
 
 (with-eval-after-load 'company
-  (define-key company-active-map (kbd "C-<return>") nil))
+  (define-key company-active-map (kbd "C-<return>") nil)
+  (add-hook 'minibuffer-setup-hook (lambda () (company-mode -1)))
+  (dolist (m '(term-mode vterm-mode shell-mode eshell-mode))
+    (add-hook m (lambda () (company-mode -1)))))
 
 (use-package company-box
   :hook (company-mode . company-box-mode))
@@ -492,7 +485,8 @@
 ;; Protobuffer
 ;; ==========================================================
 
-(use-package protobuf-mode)
+(use-package protobuf-mode
+  :mode "\\.proto\\'")
 
 ;; ==========================================================
 ;; Editor config
@@ -518,11 +512,7 @@
 ;; ==========================================================
 
 (use-package yasnippet
-  :config
-  (yas-reload-all)
-  (yas-global-mode 1)
-  :init
-  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  :config (yas-global-mode 1)
   :bind (("C-c C-h" . yas-expand)))
 
 ;; ==========================================================
@@ -539,6 +529,7 @@
 ;; Onde os .so/.dylib de grammars ficam
 (setq treesit-extra-load-path
       (list (expand-file-name "tree-sitter" user-emacs-directory)))
+
 
 (setq treesit-language-source-alist
       '((typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
@@ -560,11 +551,13 @@
   (global-treesit-auto-mode)
   )
 
-;; Prefer TS/TSX Tree-sitter modes whenever a classic mode is requested
 (dolist (pair '((typescript-mode . typescript-ts-mode)
-                (js-mode         . typescript-ts-mode)
-                (js2-mode        . typescript-ts-mode)))
+                (js-mode         . js-ts-mode)
+                (js2-mode        . js-ts-mode)))
   (add-to-list 'major-mode-remap-alist pair))
+
+;; Bash moderno
+(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
 
 (use-package nodejs-repl)
 
@@ -653,27 +646,16 @@
 ;; ==================================================
 
 (use-package treemacs
-  :defer t
+  :bind (("M-0"     . treemacs-select-window)   ;; sobrescreve digit-argument
+         ("C-x t t" . treemacs)                 ;; toggle
+         ("C-x t 1" . treemacs-delete-other-windows)
+         ("C-x t B" . treemacs-bookmark))
   :custom
   (treemacs-is-never-other-window t)
   (treemacs-width 55))
 
-;; treemacs func to toggle treemacs-select-window and quit (q key) if treemacs is current buffer
-(defun treemacs-toggle ()
-  (interactive)
-  (if (string= (buffer-name) "*treemacs*")
-      (keyboard-escape-quit)
-    (treemacs-select-window)))
-
 (use-package treemacs-projectile
-  :after (treemacs projectile)
-  :bind
-  ("M-0" . treemacs-display-current-project-exclusively)
-
-  :config
-  (setq treemacs-is-never-other-window t)
-  ;; increase width
-  (setq treemacs-width 55))
+  :after (treemacs projectile))
 
 ;; ==================================================
 ;; Markdown mode
@@ -756,10 +738,5 @@
   (doom-modeline-buffer-file-name-style 'truncate-except-project)
   :config
   ;; Customize settings here
-  (setq doom-modeline-height 25)                ;; Set the height of the modeline
   (setq doom-modeline-minor-modes nil)          ;; Hide minor modes
-  (setq doom-modeline-icon t)				    ;; Show icons
-  (setq doom-modeline-icon-type 'all-the-icons) ;; Use all-the-icons as the icon set
-  (setq doom-modeline-lsp t)                    ;; Show LSP info in the modeline
-  (setq doom-modeline-buffer-file-name-style 'truncate-except-project)  ;; Truncate path
   )
