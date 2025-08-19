@@ -645,14 +645,21 @@
 ;; https://github.com/Alexander-Miller/treemacs
 ;; ==================================================
 
+(defun treemacs-toggle ()
+  (interactive)
+  (if (string= (buffer-name) "*treemacs*")
+      (keyboard-escape-quit)
+    (treemacs-add-and-display-current-project-exclusively)))
+
 (use-package treemacs
-  :bind (("M-0"     . treemacs-select-window)   ;; sobrescreve digit-argument
+  :bind (("M-0"     . treemacs-toggle)   ;; sobrescreve digit-argument
          ("C-x t t" . treemacs)                 ;; toggle
          ("C-x t 1" . treemacs-delete-other-windows)
          ("C-x t B" . treemacs-bookmark))
   :custom
   (treemacs-is-never-other-window t)
   (treemacs-width 55))
+
 
 (use-package treemacs-projectile
   :after (treemacs projectile))
