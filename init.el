@@ -257,9 +257,6 @@
 ;; Disable ido-mode if it's enabled
 (ido-mode -1)
 
-;; replace C-c p s g (original counsel-projectile-grep, by counsel-rg)
-(global-set-key (kbd "C-c p s g") 'counsel-rg)
-
 (use-package ivy
   :diminish ivy-mode
   :init (ivy-mode 1)
@@ -317,6 +314,18 @@
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
+
+;;===========================================================
+;; Setup counsel-rg to start at project root and bind to projectile map
+;;============================================================
+
+(defun my/counsel-rg-at-project-root ()
+  (interactive)
+  (let ((default-directory (projectile-project-root)))
+    (counsel-rg)))
+
+(with-eval-after-load 'counsel-projectile
+  (define-key projectile-command-map (kbd "s g") #'my/counsel-rg-at-project-root))
 
 ;; ==================================================
 ;; Smartparens
