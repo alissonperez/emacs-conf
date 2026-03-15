@@ -501,7 +501,8 @@
 (use-package editorconfig
   :config
   (editorconfig-mode 1)
-  )
+  ;; Org mode requires tab-width 8; prevent editorconfig from overriding it
+  (add-to-list 'editorconfig-exclude-modes 'org-mode))
 
 ;; ==========================================================
 ;; Textmate minnor mode (https://melpa.org/#/textmate)
