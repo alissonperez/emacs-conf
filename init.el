@@ -169,7 +169,7 @@
 (put 'upcase-region 'disabled nil)
 
 ;; y/n instead of yes/no
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setopt use-short-answers t)
 
 ;; Display continuous lines
 (setq-default truncate-lines t)
@@ -253,9 +253,6 @@
 ;; ==========================================================
 
 (use-package avy)
-
-;; Disable ido-mode if it's enabled
-(ido-mode -1)
 
 (use-package ivy
   :diminish ivy-mode
@@ -484,7 +481,7 @@
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "C-<return>") nil)
   (add-hook 'minibuffer-setup-hook (lambda () (company-mode -1)))
-  (dolist (m '(term-mode vterm-mode shell-mode eshell-mode))
+  (dolist (m '(term-mode-hook vterm-mode-hook shell-mode-hook eshell-mode-hook))
     (add-hook m (lambda () (company-mode -1)))))
 
 (use-package company-box
@@ -532,19 +529,19 @@
   :hook (org-mode . org-bullets-mode))
 
 ;; ==========================================================
-;; JS things...
+;; JS/TS mode
 ;; ==========================================================
 
-;; Onde os .so/.dylib de grammars ficam
+;; Onde ficam os .dylib/.so
 (setq treesit-extra-load-path
-      (list (expand-file-name "tree-sitter" user-emacs-directory)))
-
+      (seq-filter #'file-directory-p
+                  (list (expand-file-name "tree-sitter" "~/.emacs.d/"))))
 
 (setq treesit-language-source-alist
-      '((typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-        (bash       "https://github.com/tree-sitter/tree-sitter-bash" "master" "src")
-		))
+      '((tsx        "https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src")
+        (bash       "https://github.com/tree-sitter/tree-sitter-bash")))
+
 
 ;; Then run M-x treesit-install-language-grammar and pick
 ;;  - typescript
@@ -562,11 +559,21 @@
 
 (dolist (pair '((typescript-mode . typescript-ts-mode)
                 (js-mode         . js-ts-mode)
-                (js2-mode        . js-ts-mode)))
+                (js2-mode        . js-ts-mode)
+                (sh-mode         . bash-ts-mode)))
   (add-to-list 'major-mode-remap-alist pair))
 
-;; Bash moderno
-(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'"  . typescript-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'"  . js-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.cjs\\'" . js-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . json-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.sh\\'"   . bash-ts-mode))
+
+;; ==========================================================
+;; Other JS things...
+;; ==========================================================
 
 (use-package nodejs-repl)
 
@@ -577,17 +584,15 @@
 ;; This package automatically adds node_modules/.bin to my exec-path in Emacs,
 ;; ensuring that flycheck uses the local eslint executable from your project.
 (use-package add-node-modules-path
-  :hook ((js-mode . add-node-modules-path)
-         (web-mode . add-node-modules-path)))
-
-(add-hook 'typescript-ts-mode-hook #'add-node-modules-path)
-(add-hook 'tsx-ts-mode-hook        #'add-node-modules-path)
+  :hook ((js-mode          . add-node-modules-path)
+         (web-mode         . add-node-modules-path)
+         (typescript-ts-mode . add-node-modules-path)
+         (tsx-ts-mode        . add-node-modules-path)))
 
 (with-eval-after-load 'flycheck
   ;; Disable jshint and jscs checkers as we will use eslint
-  (setq-default flycheck-disabled-checkers
-                (append flycheck-disabled-checkers
-                        '(javascript-jshint javascript-jscs))))
+  (dolist (checker '(javascript-jshint javascript-jscs))
+    (add-to-list 'flycheck-disabled-checkers checker)))
 
 ;; npm i -g typescript-language-server typescript  (once per machine)
 
@@ -607,8 +612,8 @@
 
 (use-package go-mode
   :hook ((go-mode . lsp-deferred)
-         (before-save . gofmt-before-save))
-  :custom (tab-width 4))
+         (go-mode . (lambda () (setq-local tab-width 4)))
+         (go-mode . (lambda () (add-hook 'before-save-hook #'gofmt-before-save nil t)))))
 
 
 ;; =========================================================
@@ -705,7 +710,7 @@
   :config
   ;; disable company inline previews to avoid overlap
   (with-eval-after-load 'company
-    (delq 'company-preview-if-just-one-frontend company-frontends))
+    (setq company-frontends (delq 'company-preview-if-just-one-frontend company-frontends)))
   )
 
 ;; (define-key copilot-completion-map (kbd "C-<return>") 'copilot-accept-completion)
