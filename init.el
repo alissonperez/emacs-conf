@@ -670,6 +670,10 @@
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
 			  ("C-<return>" . copilot-accept-completion))
+  :custom
+  ;; Default 100k is too small — silences "*temp* size exceeds copilot-max-char"
+  ;; warnings and lets copilot work in larger files.
+  (copilot-max-char 500000)
   :config
   ;; disable company inline previews to avoid overlap
   (with-eval-after-load 'company
