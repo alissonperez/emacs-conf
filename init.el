@@ -7,11 +7,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(desktop-save-mode t)
  '(initial-frame-alist '((fullscreen . maximized)))
- '(magit-commit-arguments '("--gpg-sign=A41BF0ECF08B6764"))
  '(magit-diff-use-overlays nil)
- '(package-selected-packages nil)
  '(python-shell-exec-path nil))
 
 (put 'set-goal-column 'disabled nil)
@@ -22,7 +19,11 @@
 ;; Pequeno ganho de responsividade (LSP/TS)
 ;; ==================================================
 (setq read-process-output-max (* 4 1024 1024)) ; 4MB
-(setq gc-cons-threshold (* 128 1024 1024))     ; 128MB
+;; High threshold during startup, then drop to a sane interactive value so
+;; individual GC pauses stay short.
+(setq gc-cons-threshold (* 128 1024 1024))
+(add-hook 'emacs-startup-hook
+          (lambda () (setq gc-cons-threshold (* 32 1024 1024))))
 
 ;; ==================================================
 ;; Adding straight
@@ -72,11 +73,15 @@
 ;; Convert camel case to underscore
 ;; ==================================================
 
-(defun camel-to-snake () (interactive)
-       "Convert camel case to underscore case"
-       (progn
-		 (replace-regexp "\\([A-Z]\\)" "_\\1" nil (region-beginning) (region-end))
-		 (downcase-region (region-beginning) (region-end))))
+(defun camel-to-snake (beg end)
+  "Convert camel case to underscore case in region BEG..END."
+  (interactive "r")
+  (save-excursion
+    (goto-char beg)
+    (let ((end-marker (copy-marker end)))
+      (while (re-search-forward "\\([A-Z]\\)" end-marker t)
+        (replace-match "_\\1" t nil))
+      (downcase-region beg end-marker))))
 
 
 ;; ==================================================
@@ -114,7 +119,9 @@
 
 (use-package exec-path-from-shell
   :init
-  (setq exec-path-from-shell-arguments '("-l"))
+  ;; Drop "-l" (login shell): sourcing zprofile/zshrc/plugins adds hundreds of
+  ;; ms to startup. Put PATH/NVM_DIR exports in ~/.zshenv instead.
+  (setq exec-path-from-shell-arguments nil)
   (setq exec-path-from-shell-variables
 		'("PATH" "OPENAI_API_KEY" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL"))
   (setq exec-path-from-shell-shell-name "zsh")
@@ -128,23 +135,15 @@
 ;; Recent files
 ;; ==================================================
 
-;; (require 'recentf)
-;; (recentf-mode 1)
-;; (setq recentf-max-menu-items 25)
-;; (global-set-key "\C-x\ \C-g" 'recentf-open-files)
-
 ;; ==================================================
 ;; Hooks
 ;; ==================================================
 
-;; After save hook example
-
-;; (defun make-html()
-;;  (shell-command ". /home/alisson.perez/.virtualenvs/djomd/bin/activate; cd /home/alisson.perez/Devel/django-reporting/docs/; make html")
-;;  )
-;; (add-hook 'after-save-hook 'make-html)
-
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; Trim trailing whitespace only in code buffers — markdown uses two trailing
+;; spaces as a hard line break, and shared repos get noisy diffs otherwise.
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
 
 ;; ==================================================
 ;; General config
@@ -152,13 +151,6 @@
 
 ;; Show time at mode-line
 (display-time-mode 1)
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 ;; Removes toolbar and scrollbar
 (tool-bar-mode -1)
@@ -208,7 +200,8 @@
 ;; Undo Fu - https://github.com/emacsmirror/undo-fu
 ;;============================================================
 
-(use-package undo-fu :init (global-set-key [remap undo] #'undo-fu-only-undo))
+(use-package undo-fu
+  :bind ([remap undo] . undo-fu-only-undo))
 (use-package vundo :after undo-fu :bind ("C-x u" . vundo))
 
 ;;============================================================
@@ -228,9 +221,10 @@
 (global-hl-line-mode -1)
 (blink-cursor-mode -1)
 
-;; Line numbers
-(global-display-line-numbers-mode 1)
+;; Line numbers in code and prose buffers only — keep dired/magit/vterm fast.
 (setq display-line-numbers-width 2)
+(dolist (h '(prog-mode-hook text-mode-hook conf-mode-hook))
+  (add-hook h #'display-line-numbers-mode))
 
 (use-package drag-stuff
   :bind (("M-p" . drag-stuff-up)
@@ -252,7 +246,8 @@
 ;; IVY (replaces ace-jump)
 ;; ==========================================================
 
-(use-package avy)
+(use-package avy
+  :bind (("C-:" . avy-goto-char)))
 
 (use-package ivy
   :diminish ivy-mode
@@ -266,8 +261,7 @@
      (counsel-find-file . ivy--regex-fuzzy)
      (counsel-projectile-find-file . ivy--regex-fuzzy)
      (t . ivy--regex-fuzzy)))
-  :bind (("C-:" . avy-goto-char)
-         ("C-x b" . ivy-switch-buffer)
+  :bind (("C-x b" . ivy-switch-buffer)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
          ("RET" . ivy-done)
@@ -275,9 +269,7 @@
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line)))
 
-
-;; Um único bind para find-file já basta:
-(global-set-key (kbd "C-x C-f") #'counsel-find-file)
+;; counsel-mode already remaps find-file → counsel-find-file; no extra bind needed.
 
 (use-package counsel :after ivy :config (counsel-mode 1))
 (use-package swiper  :after ivy :bind (("C-s" . swiper)))
@@ -302,7 +294,7 @@
   :diminish projectile-mode
   :init (projectile-mode +1)
   :custom
-  (projectile-enable-caching t)
+  (projectile-enable-caching nil)
   (projectile-switch-project-action #'projectile-dired)
   (projectile-require-project-root t)
   (projectile-completion-system 'ivy)
@@ -325,15 +317,11 @@
   (define-key projectile-command-map (kbd "s g") #'my/counsel-rg-at-project-root))
 
 ;; ==================================================
-;; Smartparens
+;; Paren pairing — built-in electric-pair-mode is lighter than smartparens.
 ;; ==================================================
 
-(use-package smartparens
-  :diminish smartparens-mode
-  :config
-  (progn
-    (require 'smartparens-config)
-    (smartparens-global-mode 1)))
+(electric-pair-mode 1)
+(show-paren-mode 1)
 
 ;;===========================================================
 ;; Magit
@@ -341,10 +329,6 @@
 
 (use-package magit
   :bind ("C-x g" . magit-status))
-
-;;===========================================================
-
-;; (setq org-cycle-emulate-tab 'whitestart)
 
 ;; ===========================================================
 ;; Header line
@@ -391,15 +375,12 @@
 						 ;; :background "red"
 						 )))))
 
-(defun sl/display-header ()
-  (setq header-line-format
-		'("" ;; invocation-name
-		  (:eval (if (buffer-file-name)
-					 (sl/make-header)
-				   "%b")))))
-
-(add-hook 'buffer-list-update-hook
-		  'sl/display-header)
+;; Set header-line-format once via the default value. The :eval form is
+;; re-run by redisplay automatically, so we don't need a hook to recompute it.
+(setq-default header-line-format
+              '("" (:eval (if (buffer-file-name)
+                              (sl/make-header)
+                            "%b"))))
 
 ;;============================================================
 ;; Duplicate Line
@@ -430,28 +411,16 @@
 (global-set-key (kbd "C-x C-a") 'rename-file-and-buffer)
 
 ;; ==========================================================
-;; Zoom package
-;; ==========================================================
-
-;; Zoom docs: https://github.com/cyrus-and/zoom
-
-(defun size-callback ()
-  (cond ((> (frame-pixel-width) 1280) '(120 . 0))
-        (t                            '(0.5 . 0.5))))
-
-(use-package zoom
-  :custom
-  (zoom-mode t)
-  (zoom-size 'size-callback))
-
-;; ==========================================================
 ;; highlight-indentation
 ;; ==========================================================
 
 (use-package highlight-indent-guides
   :hook (prog-mode . highlight-indent-guides-mode)
   :config
-  (setq highlight-indent-guides-method 'character))
+  ;; 'bitmap is the fastest method in graphical Emacs; 'character is sluggish
+  ;; on large files.
+  (setq highlight-indent-guides-method
+        (if (display-graphic-p) 'bitmap 'column)))
 
 ;; ==========================================================
 ;; Which key
@@ -474,7 +443,7 @@
 			  ("<tab>" . company-complete-selection))
   :hook (after-init . global-company-mode)
   :config
-  (setq company-idle-delay 0
+  (setq company-idle-delay 0.1
         company-minimum-prefix-length 1
         company-show-numbers t))
 
@@ -505,14 +474,15 @@
   (add-to-list 'editorconfig-exclude-modes 'org-mode))
 
 ;; ==========================================================
-;; Textmate minnor mode (https://melpa.org/#/textmate)
+;; M-RET = open a new line below and indent (replaces textmate-next-line,
+;; which depended on the unmaintained textmate.el package).
 ;; ==========================================================
 
-(use-package textmate
-  :init
-  (textmate-mode)
-  :config
-  (global-set-key (kbd "M-RET") 'textmate-next-line))
+(global-set-key (kbd "M-RET")
+                (lambda ()
+                  (interactive)
+                  (end-of-line)
+                  (newline-and-indent)))
 
 ;; ==========================================================
 ;; Yasippet
@@ -641,13 +611,6 @@
   :hook (python-mode . poetry-tracking-mode))
 
 ;; ==================================================
-;; Macros
-;; ==================================================
-
-(fset 'single_quotes
-	  (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217765 34 return 39 return 33] 0 "%d")) arg)))
-
-;; ==================================================
 ;; Using arrows to move over buffers (built-in feature)
 ;;   https://www.emacswiki.org/emacs/WindMove
 ;; ==================================================
@@ -704,7 +667,6 @@
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :ensure t
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
 			  ("C-<return>" . copilot-accept-completion))
@@ -730,8 +692,6 @@
 ;; org-ai
 ;; ==================================================
 
-(setq org-ai-openai-api-token (getenv "OPENAI_API_KEY"))
-
 (use-package org-ai
   :commands (org-ai-mode
              org-ai-global-mode)
@@ -739,8 +699,10 @@
   (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
   (org-ai-global-mode) ; installs global keybindings on C-c M-a
   :config
-  (setq org-ai-default-chat-model "gpt-4o-mini") ; if you are on the gpt-4 beta:
-  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
+  ;; Read OPENAI_API_KEY after exec-path-from-shell has propagated env vars.
+  (setq org-ai-openai-api-token (getenv "OPENAI_API_KEY"))
+  (setq org-ai-default-chat-model "gpt-4o-mini")
+  (org-ai-install-yasnippets))
 
 ;; ==================================================
 ;; Doom modeline
