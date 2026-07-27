@@ -66,6 +66,6 @@ brew install --cask emacs     # Emacs 30+
 npm i -g typescript-language-server typescript  # TS LSP server
 ```
 
-NVM init must be in `~/.zprofile` (not `~/.zshrc`) so GUI Emacs inherits `PATH` and `NVM_DIR`.
+`PATH` and `NVM_DIR` must be exported statically in `~/.zshenv` (exec-path-from-shell runs a non-login zsh, so `~/.zprofile`/`~/.zshrc` are not sourced).
 
 Python virtualenvs are expected at `~/.cache/pypoetry/virtualenvs` (Poetry default).

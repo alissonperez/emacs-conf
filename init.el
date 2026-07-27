@@ -4,11 +4,11 @@
 
 ;; Keep Custom's machine-written settings out of init.el (a second
 ;; custom-set-variables block appended by Custom would break both).
+;; The file itself is loaded at the very end of init so GUI-saved
+;; customizations win over the defaults set below.
 (setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file nil 'nomessage))
 
-(push '(fullscreen . maximized) initial-frame-alist)
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
 (setq magit-diff-use-overlays nil)
 
 (put 'set-goal-column 'disabled nil)
@@ -83,7 +83,8 @@
       ;; leading capital doesn't produce a leading underscore.
       (while (re-search-forward "\\([a-z0-9]\\)\\([A-Z]\\)" end-marker t)
         (replace-match "\\1_\\2" t nil))
-      (downcase-region beg end-marker))))
+      (downcase-region beg end-marker)
+      (set-marker end-marker nil))))
 
 
 ;; ==================================================
@@ -512,13 +513,17 @@
 (setq treesit-language-source-alist
       '((tsx        "https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src")
-        (bash       "https://github.com/tree-sitter/tree-sitter-bash")))
+        (bash       "https://github.com/tree-sitter/tree-sitter-bash")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+        (json       "https://github.com/tree-sitter/tree-sitter-json")))
 
 
 ;; Then run M-x treesit-install-language-grammar and pick
 ;;  - typescript
 ;;  - tsx
 ;;  - bash
+;;  - javascript
+;;  - json
 
 ;; Optional helper that installs grammars on first run
 (use-package treesit-auto                       ; MELPA
@@ -587,8 +592,9 @@
 
 ;; lsp-deferred is already hooked to go-mode in the lsp-mode block.
 (use-package go-mode
-  :hook ((go-mode . (lambda () (setq-local tab-width 4)))
-         (go-mode . (lambda () (add-hook 'before-save-hook #'gofmt-before-save nil t)))))
+  :hook (go-mode . (lambda ()
+                     (setq-local tab-width 4)
+                     (add-hook 'before-save-hook #'gofmt-before-save nil t))))
 
 
 ;; =========================================================
@@ -732,3 +738,7 @@
   ;; Customize settings here
   (setq doom-modeline-minor-modes nil)          ;; Hide minor modes
   )
+
+;; Load Custom's settings last so they override anything set above.
+(when (file-exists-p custom-file)
+  (load custom-file nil 'nomessage))
