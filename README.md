@@ -10,7 +10,7 @@ An advanced and evolving Emacs configuration that stream‑lines everyday develo
 
 ### Modern interface & navigation
 
-* **`ivy`**\*\* / ****`counsel`**** / \*\***`flx`** – fuzzy search for commands, files and buffers.
+* **`ivy`** / **`counsel`** / **`flx`** – fuzzy search for commands, files and buffers.
 * **`avy`** – instant navigation to visible text.
 * **`doom-modeline`** – clean, informative modeline with LSP and Git status.
 * **`which-key`** – discover keybindings on the fly.
@@ -87,6 +87,8 @@ if [[ -d "$NVM_DIR/versions/node" ]]; then
   [[ -z "$_nvm_ver" ]] && _nvm_ver=$(command ls "$NVM_DIR/versions/node" | sort -V | tail -1)
   [[ -n "$_nvm_ver" ]] && _path_prepend "$NVM_DIR/versions/node/$_nvm_ver/bin"
 fi
+
+unset -f _path_prepend
 ```
 
 Full `nvm.sh`/`pyenv init` sourcing for interactive terminals stays in `~/.zprofile` as usual.
@@ -107,7 +109,7 @@ M-x copilot-login RET
 | Languages       | lsp-mode, lsp-pyright, go-mode, treesit-auto, apheleia, poetry, add-node-modules-path, web-mode (for JSX), nodejs-repl, markdown-mode, yaml-mode, dockerfile-mode, terraform-mode, protobuf-mode |
 | Tooling         | exec-path-from-shell, editorconfig, magit, projectile, counsel-projectile, treemacs, treemacs-projectile                                                                  |
 | AI              | copilot.el, org-ai                                                                                                                                                         |
-| Appearance      | material-theme, nerd-icons                                                                                                                                                 |
+| Appearance      | material-theme, nerd-icons, org-bullets                                                                                                                                   |
 
 ## 🚀 Usage tips
 
