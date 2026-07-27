@@ -2,14 +2,14 @@
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(initial-frame-alist '((fullscreen . maximized)))
- '(magit-diff-use-overlays nil)
- '(python-shell-exec-path nil))
+;; Keep Custom's machine-written settings out of init.el (a second
+;; custom-set-variables block appended by Custom would break both).
+;; The file itself is loaded at the very end of init so GUI-saved
+;; customizations win over the defaults set below.
+(setq custom-file (locate-user-emacs-file "custom.el"))
+
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+(setq magit-diff-use-overlays nil)
 
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -79,9 +79,12 @@
   (save-excursion
     (goto-char beg)
     (let ((end-marker (copy-marker end)))
-      (while (re-search-forward "\\([A-Z]\\)" end-marker t)
-        (replace-match "_\\1" t nil))
-      (downcase-region beg end-marker))))
+      ;; Only insert "_" between a lower/digit and an upper char, so a
+      ;; leading capital doesn't produce a leading underscore.
+      (while (re-search-forward "\\([a-z0-9]\\)\\([A-Z]\\)" end-marker t)
+        (replace-match "\\1_\\2" t nil))
+      (downcase-region beg end-marker)
+      (set-marker end-marker nil))))
 
 
 ;; ==================================================
@@ -96,7 +99,6 @@
          (tsx-ts-mode        . lsp-deferred))
   :custom
   (lsp-idle-delay 0.20)  ;; default 0.5 – snappier hovers
-  (lsp-prefer-flymake nil)
   (lsp-completion-provider :capf))
 
 ;; ==================================================
@@ -120,7 +122,8 @@
 (use-package exec-path-from-shell
   :init
   ;; Drop "-l" (login shell): sourcing zprofile/zshrc/plugins adds hundreds of
-  ;; ms to startup. Put PATH/NVM_DIR exports in ~/.zshenv instead.
+  ;; ms to startup. PATH/NVM_DIR live in ~/.zshenv (static, no nvm.sh/pyenv
+  ;; init), which non-login zsh does read.
   (setq exec-path-from-shell-arguments nil)
   (setq exec-path-from-shell-variables
 		'("PATH" "OPENAI_API_KEY" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL"))
@@ -130,10 +133,6 @@
 
 ;; To check which shell is being used
 ;; (shell-command-to-string "echo $SHELL")
-
-;; ==================================================
-;; Recent files
-;; ==================================================
 
 ;; ==================================================
 ;; Hooks
@@ -202,7 +201,7 @@
 
 (use-package undo-fu
   :bind ([remap undo] . undo-fu-only-undo))
-(use-package vundo :after undo-fu :bind ("C-x u" . vundo))
+(use-package vundo :bind ("C-x u" . vundo))
 
 ;;============================================================
 ;; Multiple Cursors
@@ -258,6 +257,9 @@
   (ivy-wrap t)
   (ivy-re-builders-alist
    '((swiper . ivy--regex-plus)
+     ;; Fuzzy would turn each char into ".*" in the regex sent to ripgrep:
+     ;; noisy matches and slow searches in big repos.
+     (counsel-rg . ivy--regex-plus)
      (counsel-find-file . ivy--regex-fuzzy)
      (counsel-projectile-find-file . ivy--regex-fuzzy)
      (t . ivy--regex-fuzzy)))
@@ -280,11 +282,9 @@
 ;; ==========================================================
 
 (use-package yaml-mode
-  :init
   :mode
-  ("\\.ya?ml$" . yaml-mode)
-  ("Aioros" . yaml-mode)
-  )
+  ("\\.ya?ml\\'" . yaml-mode)
+  ("Aioros" . yaml-mode))
 
 ;;===========================================================
 ;; Projectile
@@ -426,7 +426,9 @@
 ;; Which key
 ;; ==========================================================
 
+;; Built into Emacs 30 — no need for straight to clone it.
 (use-package which-key
+  :straight (:type built-in)
   :diminish which-key-mode
   :init
   (which-key-mode)
@@ -445,7 +447,7 @@
   :config
   (setq company-idle-delay 0.1
         company-minimum-prefix-length 1
-        company-show-numbers t))
+        company-show-quick-access t))
 
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "C-<return>") nil)
@@ -511,22 +513,29 @@
 (setq treesit-language-source-alist
       '((tsx        "https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src")
-        (bash       "https://github.com/tree-sitter/tree-sitter-bash")))
+        (bash       "https://github.com/tree-sitter/tree-sitter-bash")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+        (json       "https://github.com/tree-sitter/tree-sitter-json")))
 
 
 ;; Then run M-x treesit-install-language-grammar and pick
 ;;  - typescript
 ;;  - tsx
 ;;  - bash
+;;  - javascript
+;;  - json
 
 ;; Optional helper that installs grammars on first run
 (use-package treesit-auto                       ; MELPA
   :init
   ;; (setq treesit-auto-install 'prompt)           ; or t to skip prompt
   (setq treesit-auto-install t)
+  ;; Only manage the languages we intentionally use *-ts-mode for. Without
+  ;; this, global-treesit-auto-mode also remaps python-mode/go-mode/yaml-mode
+  ;; etc., bypassing the lsp/poetry/gofmt hooks configured on those modes.
+  (setq treesit-auto-langs '(typescript tsx javascript bash json))
   :config
-  (global-treesit-auto-mode)
-  )
+  (global-treesit-auto-mode))
 
 (dolist (pair '((typescript-mode . typescript-ts-mode)
                 (js-mode         . js-ts-mode)
@@ -581,10 +590,11 @@
 ;; GO Things...
 ;; ==========================================================
 
+;; lsp-deferred is already hooked to go-mode in the lsp-mode block.
 (use-package go-mode
-  :hook ((go-mode . lsp-deferred)
-         (go-mode . (lambda () (setq-local tab-width 4)))
-         (go-mode . (lambda () (add-hook 'before-save-hook #'gofmt-before-save nil t)))))
+  :hook (go-mode . (lambda ()
+                     (setq-local tab-width 4)
+                     (add-hook 'before-save-hook #'gofmt-before-save nil t))))
 
 
 ;; =========================================================
@@ -696,13 +706,13 @@
 ;; org-ai
 ;; ==================================================
 
+;; Deferred: calling org-ai-global-mode at startup would drag org-ai (and all
+;; of Org, one of the heaviest packages) into the initial load. Everything now
+;; loads on the first org-mode buffer; the C-c M-a global bindings appear then.
 (use-package org-ai
-  :commands (org-ai-mode
-             org-ai-global-mode)
-  :init
-  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
-  (org-ai-global-mode) ; installs global keybindings on C-c M-a
+  :hook (org-mode . org-ai-mode)
   :config
+  (org-ai-global-mode) ; installs global keybindings on C-c M-a
   ;; Read OPENAI_API_KEY after exec-path-from-shell has propagated env vars.
   (setq org-ai-openai-api-token (getenv "OPENAI_API_KEY"))
   (setq org-ai-default-chat-model "gpt-4o-mini")
@@ -728,3 +738,7 @@
   ;; Customize settings here
   (setq doom-modeline-minor-modes nil)          ;; Hide minor modes
   )
+
+;; Load Custom's settings last so they override anything set above.
+(when (file-exists-p custom-file)
+  (load custom-file nil 'nomessage))
