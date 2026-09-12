@@ -151,9 +151,12 @@
 ;; Show time at mode-line
 (display-time-mode 1)
 
-;; Removes toolbar and scrollbar
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+;; Removes toolbar and scrollbar. Guarded with fboundp: a terminal-only build
+;; (emacs-nox) never loads scroll-bar.el/tool-bar.el, so calling these
+;; unconditionally fails with "Symbol's function definition is void".
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp 'horizontal-scroll-bar-mode) (horizontal-scroll-bar-mode -1))
 
 ;; Enable downcase shortcut (C-x C-l) and uppercase (C-x C-u)
 (put 'downcase-region 'disabled nil)
