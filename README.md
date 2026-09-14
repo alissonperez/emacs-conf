@@ -111,14 +111,33 @@ M-x copilot-login RET
 | AI              | copilot.el, org-ai                                                                                                                                                         |
 | Appearance      | material-theme, nerd-icons, org-bullets                                                                                                                                   |
 
+## ⌨️ Key bindings (custom)
+
+| Key | Command |
+|---|---|
+| `C-x C-f` | `counsel-find-file` |
+| `C-x b` | `ivy-switch-buffer` |
+| `C-s` | `swiper` |
+| `C-x g` | `magit-status` |
+| `C-c p` | projectile prefix |
+| `C-c p s g` | ripgrep from project root (`my/counsel-rg-at-project-root`) |
+| `M-0` | toggle treemacs sidebar for the current project |
+| `C-S-d` | duplicate current line |
+| `C-x C-a` | rename current file and buffer in one go |
+| `C-x u` | `vundo` (visual undo tree) |
+| `C-/` | undo (`undo-fu-only-undo`) |
+| `C-?` / `C-M-_` | redo (`undo-fu-only-redo`) |
+| `C->` / `C-<` | multiple-cursors next/previous |
+| `C-c C-w` | multiple-cursors mark all |
+| `C-:` | `avy-goto-char` |
+| `C-<return>` | `copilot-accept-completion` |
+| `M-p` / `M-n` | drag line up/down |
+| `C-M-SPC` / `C-+` | expand / contract region |
+| `M-RET` | open a new indented line below |
+
 ## 🚀 Usage tips
 
 * `M-x lsp-describe-session` – inspect active LSP workspaces.
-* `C-S-d` duplicates the current line; `M-p / M-n` drags it.
-* `C-x u` launches **vundo** visual undo tree.
-* `C-c p s g` – ripgrep from the project root (`my/counsel-rg-at-project-root`).
-* `M-0` – toggle the treemacs sidebar for the current project.
-* `C-x C-a` – rename the current file and its buffer in one go.
 * `C-M-j` (`ivy-immediate-done`) in any Ivy minibuffer — use the literal text you typed instead of the highlighted candidate. Handy when creating a file whose name is a prefix of an existing one (e.g. typing `.env` when `.env.example` already exists).
 
 Fork away and tailor to your workflow!  PRs and suggestions welcome.
