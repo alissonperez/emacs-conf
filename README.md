@@ -19,20 +19,18 @@ An advanced and evolving Emacs configuration that stream‑lines everyday develo
 
 * **`lsp-mode`** with language‑specific servers (Pyright, typescript‑language‑server, gopls).
 * **Tree‑sitter major modes** (`typescript‑ts‑mode`, `tsx‑ts‑mode`) for blazing‑fast JS/TS highlighting.
-* **`company`**\*\* + \*\***`company‑box`** – zero‑lag completions.
+* **`company`** – zero‑lag completions.
 * **`yasnippet`** – snippet expansion.
 * **`flycheck`** – on‑the‑fly diagnostics, including ESLint via local `node_modules/`.
 * **`git-gutter`** – live diff in the fringe.
 * **`multiple-cursors`**, **`drag-stuff`**, **`expand-region`** – edit at warp speed.
-* **GitHub Copilot** via `copilot.el` (device‑code auth, uses NVM’s Node).
 
 ### Language support
 
 * **Python** – Pyright LSP, Poetry env detection.
 * **JavaScript / TypeScript** – TS/TSX Tree‑sitter modes (via `treesit-auto`), ESLint, Prettier via Apheleia.
 * **Go** – `go-mode` + `gopls`.
-* **Markdown / YAML / Dockerfile / Terraform** – dedicated modes.
-* **Org‑mode AI** – `org-ai` brings GPT inside Org buffers.
+* **Markdown / YAML / Dockerfile** – dedicated modes.
 
 ### Visual polish & ergonomics
 
@@ -93,23 +91,15 @@ unset -f _path_prepend
 
 Full `nvm.sh`/`pyenv init` sourcing for interactive terminals stays in `~/.zprofile` as usual.
 
-Then inside Emacs run:
-
-```text
-M-x copilot-install-server RET
-M-x copilot-login RET
-```
-
 ## 📦 Package roster (core)
 
 | Category        | Packages                                                                                                                                                                   |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UI / Navigation | ivy, counsel, swiper, flx, avy, doom-modeline, which-key                                                                                                                   |
-| Editing         | company, company-box, yasnippet, flycheck, git-gutter, multiple-cursors, drag-stuff, expand-region, highlight-indent-guides, undo-fu, vundo                              |
-| Languages       | lsp-mode, lsp-pyright, go-mode, treesit-auto, apheleia, poetry, add-node-modules-path, web-mode (for JSX), nodejs-repl, markdown-mode, yaml-mode, dockerfile-mode, terraform-mode, protobuf-mode |
+| Editing         | company, yasnippet, flycheck, git-gutter, multiple-cursors, drag-stuff, expand-region, highlight-indent-guides, undo-fu, vundo                              |
+| Languages       | lsp-mode, lsp-pyright, go-mode, treesit-auto, apheleia, poetry, add-node-modules-path, web-mode (for JSX), markdown-mode, yaml-mode, dockerfile-mode |
 | Tooling         | exec-path-from-shell, editorconfig, magit, projectile, counsel-projectile, treemacs, treemacs-projectile                                                                  |
-| AI              | copilot.el, org-ai                                                                                                                                                         |
-| Appearance      | material-theme, nerd-icons, org-bullets                                                                                                                                   |
+| Appearance      | material-theme, nerd-icons, org-modern                                                                                                                                   |
 
 ## ⌨️ Key bindings (custom)
 
@@ -130,7 +120,6 @@ M-x copilot-login RET
 | `C->` / `C-<` | multiple-cursors next/previous |
 | `C-c C-w` | multiple-cursors mark all |
 | `C-:` | `avy-goto-char` |
-| `C-<return>` | `copilot-accept-completion` |
 | `M-p` / `M-n` | drag line up/down |
 | `C-M-SPC` / `C-+` | expand / contract region |
 | `M-RET` | open a new indented line below |

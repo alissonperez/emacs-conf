@@ -127,7 +127,7 @@
   ;; init), which non-login zsh does read.
   (setq exec-path-from-shell-arguments nil)
   (setq exec-path-from-shell-variables
-		'("PATH" "OPENAI_API_KEY" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL"))
+		'("PATH" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL"))
   (setq exec-path-from-shell-shell-name "zsh")
   (exec-path-from-shell-initialize))
 
@@ -456,20 +456,9 @@
         company-show-quick-access t))
 
 (with-eval-after-load 'company
-  (define-key company-active-map (kbd "C-<return>") nil)
   (add-hook 'minibuffer-setup-hook (lambda () (company-mode -1)))
   (dolist (m '(term-mode-hook vterm-mode-hook shell-mode-hook eshell-mode-hook))
     (add-hook m (lambda () (company-mode -1)))))
-
-(use-package company-box
-  :hook (company-mode . company-box-mode))
-
-;; ==========================================================
-;; Protobuffer
-;; ==========================================================
-
-(use-package protobuf-mode
-  :mode "\\.proto\\'")
 
 ;; ==========================================================
 ;; Editor config
@@ -501,11 +490,11 @@
   :bind (("C-c C-h" . yas-expand)))
 
 ;; ==========================================================
-;; Org Bullets
+;; Org Modern (successor to the unmaintained org-bullets)
 ;; ==========================================================
 
-(use-package org-bullets
-  :hook (org-mode . org-bullets-mode))
+(use-package org-modern
+  :hook (org-mode . org-modern-mode))
 
 ;; ==========================================================
 ;; JS/TS mode
@@ -560,8 +549,6 @@
 ;; ==========================================================
 ;; Other JS things...
 ;; ==========================================================
-
-(use-package nodejs-repl)
 
 ;; use flycheck-verify-setup command to check if eslint is being used
 (use-package flycheck
@@ -669,36 +656,6 @@
          ("\\.markdown\\'" . markdown-mode)))
 
 ;; ==================================================
-;; terraform mode
-;; ==================================================
-
-(use-package terraform-mode
-  :mode (("\\.tf\\'" . terraform-mode)
-		 )
-  )
-
-;; ==================================================
-;; copilot
-;; ==================================================
-
-(use-package copilot
-  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-			  ("C-<return>" . copilot-accept-completion))
-  :custom
-  ;; Default 100k is too small — silences "*temp* size exceeds copilot-max-char"
-  ;; warnings and lets copilot work in larger files.
-  (copilot-max-char 500000)
-  :config
-  ;; disable company inline previews to avoid overlap
-  (with-eval-after-load 'company
-    (setq company-frontends (delq 'company-preview-if-just-one-frontend company-frontends)))
-  )
-
-;; (define-key copilot-completion-map (kbd "C-<return>") 'copilot-accept-completion)
-
-;; ==================================================
 ;; web-mode
 ;; ==================================================
 
@@ -707,22 +664,6 @@
   :config
   (setq web-mode-enable-auto-indentation nil) ;; Disable auto indentation
   (setq web-mode-enable-auto-quoting nil))  ; Disable automatic insertion of quotes
-
-;; ==================================================
-;; org-ai
-;; ==================================================
-
-;; Deferred: calling org-ai-global-mode at startup would drag org-ai (and all
-;; of Org, one of the heaviest packages) into the initial load. Everything now
-;; loads on the first org-mode buffer; the C-c M-a global bindings appear then.
-(use-package org-ai
-  :hook (org-mode . org-ai-mode)
-  :config
-  (org-ai-global-mode) ; installs global keybindings on C-c M-a
-  ;; Read OPENAI_API_KEY after exec-path-from-shell has propagated env vars.
-  (setq org-ai-openai-api-token (getenv "OPENAI_API_KEY"))
-  (setq org-ai-default-chat-model "gpt-4o-mini")
-  (org-ai-install-yasnippets))
 
 ;; ==================================================
 ;; Doom modeline
