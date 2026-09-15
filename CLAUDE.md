@@ -33,7 +33,6 @@ To install tree-sitter grammars: run `M-x treesit-install-language-grammar` insi
 - **LSP via lsp-mode** (not Eglot). Servers: `pyright` (Python), `typescript-language-server` (TS/TSX), `gopls` (Go).
 - **Tree-sitter modes** replace legacy JS/TS modes: `.ts` → `typescript-ts-mode`, `.tsx` → `tsx-ts-mode`, `.js` → `js-ts-mode`.
 - **Apheleia** handles on-save formatting (Prettier for TS/TSX). Go uses `gofmt-before-save`.
-- **Copilot** is loaded from GitHub (`copilot-emacs/copilot.el`) via straight, not MELPA. Accepts completion with `C-<return>`.
 - **`package.el` is intentionally disabled** — never add `(package-initialize)` or `:ensure t`; straight.el handles all installation.
 
 ## Important keybindings (custom)
@@ -52,7 +51,6 @@ To install tree-sitter grammars: run `M-x treesit-install-language-grammar` insi
 | `C-x u` | `vundo` (visual undo tree) |
 | `C->` / `C-<` | multiple-cursors next/previous |
 | `C-:` | `avy-goto-char` |
-| `C-<return>` | `copilot-accept-completion` |
 | `M-p` / `M-n` | drag line up/down |
 | `C-M-SPC` | `er/expand-region` |
 
