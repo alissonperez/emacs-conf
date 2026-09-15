@@ -1,3 +1,5 @@
+;;; init.el --- Personal Emacs configuration -*- lexical-binding: t; -*-
+
 ;; Better scroll
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
@@ -9,7 +11,6 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
-(setq magit-diff-use-overlays nil)
 
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -194,16 +195,16 @@
   ;; (set-face-background 'git-gutter:modified "purple") ; background color for modified lines
   ;; (set-face-foreground 'git-gutter:added "green")     ; text color for added lines
   ;; (set-face-foreground 'git-gutter:deleted "red")     ; text color for deleted lines
-  )
-
-(global-git-gutter-mode +1)
+  (global-git-gutter-mode +1))
 
 ;;===========================================================
 ;; Undo Fu - https://github.com/emacsmirror/undo-fu
 ;;============================================================
 
 (use-package undo-fu
-  :bind ([remap undo] . undo-fu-only-undo))
+  :bind (([remap undo] . undo-fu-only-undo)
+         ;; C-M-_ / C-? (undo-redo since Emacs 28) now redo through undo-fu.
+         ([remap undo-redo] . undo-fu-only-redo)))
 (use-package vundo :bind ("C-x u" . vundo))
 
 ;;============================================================
@@ -341,7 +342,7 @@
   `(propertize ,str 'face (list ,@properties)))
 
 (defun sl/make-header ()
-  ""
+  "Build the header-line string: abbreviated file path, truncated to fit the window."
   (let* ((sl/full-header (abbreviate-file-name buffer-file-name))
 		 (sl/header (file-name-directory sl/full-header))
 		 (sl/drop-str "[...]"))
@@ -445,7 +446,9 @@
 (use-package company
   :diminish company-mode
   :bind (:map company-active-map
-			  ("<tab>" . company-complete-selection))
+			  ;; "<tab>" only exists in GUI frames; "TAB" covers emacs -nw too.
+			  ("<tab>" . company-complete-selection)
+			  ("TAB" . company-complete-selection))
   :hook (after-init . global-company-mode)
   :config
   (setq company-idle-delay 0.1
@@ -511,7 +514,7 @@
 ;; Onde ficam os .dylib/.so
 (setq treesit-extra-load-path
       (seq-filter #'file-directory-p
-                  (list (expand-file-name "tree-sitter" "~/.emacs.d/"))))
+                  (list (expand-file-name "tree-sitter" user-emacs-directory))))
 
 (setq treesit-language-source-alist
       '((tsx        "https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src")
@@ -580,7 +583,7 @@
 ;; npm i -g typescript-language-server typescript  (once per machine)
 
 ;; Format with prettier on save
-(use-package apheleia :straight t
+(use-package apheleia
   :config
   (setf (alist-get 'tsx-ts-mode apheleia-mode-alist) 'prettier)
   (setf (alist-get 'typescript-ts-mode apheleia-mode-alist) 'prettier)

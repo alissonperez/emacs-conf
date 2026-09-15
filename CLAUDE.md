@@ -34,7 +34,7 @@ To install tree-sitter grammars: run `M-x treesit-install-language-grammar` insi
 - **Tree-sitter modes** replace legacy JS/TS modes: `.ts` → `typescript-ts-mode`, `.tsx` → `tsx-ts-mode`, `.js` → `js-ts-mode`.
 - **Apheleia** handles on-save formatting (Prettier for TS/TSX). Go uses `gofmt-before-save`.
 - **Copilot** is loaded from GitHub (`copilot-emacs/copilot.el`) via straight, not MELPA. Accepts completion with `C-<return>`.
-- **`package.el` is intentionally disabled** — never add `(package-initialize)` or `:ensure t` outside of the copilot block (which uses `:ensure t` for historical reasons but straight handles it).
+- **`package.el` is intentionally disabled** — never add `(package-initialize)` or `:ensure t`; straight.el handles all installation.
 
 ## Important keybindings (custom)
 
