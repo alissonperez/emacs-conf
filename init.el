@@ -127,7 +127,7 @@
   ;; init), which non-login zsh does read.
   (setq exec-path-from-shell-arguments nil)
   (setq exec-path-from-shell-variables
-		'("PATH" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL"))
+		'("PATH" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL" "SDKROOT"))
   (setq exec-path-from-shell-shell-name "zsh")
   (exec-path-from-shell-initialize))
 
