@@ -222,7 +222,13 @@
      (send-string-to-terminal "\e[>4;2m")
      (dolist (prefix kkp--key-prefixes)
        (define-key input-decode-map (kkp--csi-escape (string prefix))
-                   (lambda (_prompt) (kkp--process-keys prefix)))))))
+                   (lambda (_prompt) (kkp--process-keys prefix))))
+     ;; The decoder above only turns the raw CSI-u bytes into key events
+     ;; like `M-backspace'. Translating that into `M-DEL' -- what
+     ;; `backward-kill-word' is actually bound to -- is a separate step
+     ;; that `global-kkp-mode' would normally do via its handshake, which
+     ;; never completes under tmux (see comment above). Do it directly.
+     (kkp-setup-function-keys (frame-terminal)))))
 
 ;;===========================================================
 ;; Git gutter
