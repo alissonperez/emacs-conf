@@ -178,6 +178,52 @@
 ;; Disable anoying alarm bell for errors (arrrgg..! =S)
 (setq ring-bell-function 'ignore)
 
+;;============================================================
+;; Kitty Keyboard Protocol (terminal only)
+;;============================================================
+
+;; Legacy terminal encoding has no Shift bit on control chords, so C-S-d
+;; and C-d arrive as the exact same byte and Emacs can't tell them apart.
+;; Ghostty implements the Kitty Keyboard Protocol, which can report Shift;
+;; this package makes Emacs speak it so bindings like C-S-d work under
+;; `emacs -nw`. No-op in GUI Emacs, which already gets real key events.
+(use-package kkp
+  :unless (display-graphic-p)
+  :hook (tty-setup . global-kkp-mode))
+
+;; Under tmux, kkp never activates: it only enables itself after querying
+;; the terminal (CSI ? u) and getting a Kitty reply back, and tmux answers
+;; no such query (it has no `kitty' extended-keys-format). tmux does report
+;; modified keys itself, but two things have to line up first.
+;;
+;; 1. The mode. `term/tmux.el' hardcodes a request for modifyOtherKeys mode
+;;    1, which per tmux's docs only re-encodes keys "which lack an existing
+;;    well-known representation" -- C-S-d has one (C-d), so mode 1 leaves it
+;;    ambiguous. Mode 2 re-encodes everything, so it has to be asked for.
+;;    But mode 2 re-encodes *every* modified key -- M-x arrives as
+;;    "\e[120;3u", C-c as "\e[99;5u" -- and `xterm.el' only decodes a
+;;    curated list, so anything outside it would leak into the buffer as
+;;    literal text. Mode 2 therefore needs a generic decoder, not a table.
+;; 2. The decoder. kkp's parser is exactly that, and it is stateless: only
+;;    kkp's *detection* depends on the handshake, not its parsing. Register
+;;    it directly. It parses the Kitty encoding, which matches tmux's csi-u
+;;    format (set in ~/.tmux.conf) -- not tmux's xterm format, where
+;;    "\e[27;3;120~" would be misread as keycode 27.
+;;
+;; The payoff over hand-mapping single keys: C-S-<letter> arrives unambig-
+;; uously, so `shift-select-mode' shift-translates the unbound ones to
+;; their plain bindings and extends the region (C-S-f, C-S-b, C-S-p...).
+(run-with-idle-timer
+ 1 nil
+ (lambda ()
+   (when (and (not (display-graphic-p))
+              (string-prefix-p "tmux" (tty-type (selected-frame))))
+     (require 'kkp)
+     (send-string-to-terminal "\e[>4;2m")
+     (dolist (prefix kkp--key-prefixes)
+       (define-key input-decode-map (kkp--csi-escape (string prefix))
+                   (lambda (_prompt) (kkp--process-keys prefix)))))))
+
 ;;===========================================================
 ;; Git gutter
 ;;============================================================
