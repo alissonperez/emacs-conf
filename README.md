@@ -91,6 +91,22 @@ unset -f _path_prepend
 
 Full `nvm.sh`/`pyenv init` sourcing for interactive terminals stays in `~/.zprofile` as usual.
 
+### Terminal setup (`emacs -nw`)
+
+Two pieces of terminal configuration live outside this repo but are required for terminal Emacs to receive every key.
+
+**Meta key (Ghostty).** macOS reserves Option for accented characters, so Ghostty does not send it as Alt/Meta. In `~/.config/ghostty/config`:
+
+```
+macos-option-as-alt = true
+```
+
+Use `left` or `right` instead of `true` to keep one Option key free for accents.
+
+**`C-S-<letter>` inside tmux.** Legacy terminal encoding has no Shift bit for Control chords, so `C-S-d` and `C-d` arrive as the same byte — which breaks `duplicate-current-line` and `C-S-f`/`C-S-b`/`C-S-p`/`C-S-n` shift‑selection. Outside tmux the `kkp` package handles this through Ghostty's Kitty keyboard protocol; inside tmux it cannot, because tmux never answers kkp's handshake. Copy the settings from [`examples/tmux.conf`](examples/tmux.conf) into your `~/.tmux.conf`.
+
+That file is only tmux's half — the Emacs half is the "Kitty Keyboard Protocol" section of `init.el`, and both are required.
+
 ## 📦 Package roster (core)
 
 | Category        | Packages                                                                                                                                                                   |
