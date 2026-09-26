@@ -103,9 +103,33 @@ macos-option-as-alt = true
 
 Use `left` or `right` instead of `true` to keep one Option key free for accents.
 
-**`C-S-<letter>` inside tmux.** Legacy terminal encoding has no Shift bit for Control chords, so `C-S-d` and `C-d` arrive as the same byte — which breaks `duplicate-current-line` and `C-S-f`/`C-S-b`/`C-S-p`/`C-S-n` shift‑selection. Outside tmux the `kkp` package handles this through Ghostty's Kitty keyboard protocol; inside tmux it cannot, because tmux never answers kkp's handshake. Copy the settings from [`examples/tmux.conf`](examples/tmux.conf) into your `~/.tmux.conf`.
+**`C-S-<letter>` inside tmux.** Legacy terminal encoding has no Shift bit for Control chords, so `C-S-d` and `C-d` arrive as the same byte — which breaks `duplicate-current-line` and `C-S-f`/`C-S-b`/`C-S-p`/`C-S-n` shift‑selection. Outside tmux the `kkp` package handles this through the Kitty keyboard protocol; inside tmux it cannot, because tmux never answers kkp's handshake. Instead, the terminal sends the keys to tmux in CSI‑u form (`C-S-d` → `\e[100;6u`), and tmux passes them on to Emacs. The Emacs half is the "Kitty Keyboard Protocol" section of `init.el`, and it is the same on every OS. The terminal and tmux halves live outside this repo and differ per OS:
 
-That file is only tmux's half — the Emacs half is the "Kitty Keyboard Protocol" section of `init.el`, and both are required.
+*macOS (Ghostty).* Ghostty reports modified keys natively once tmux asks for them. Copy the settings from [`examples/tmux.conf`](examples/tmux.conf) into your `~/.tmux.conf`, including the `extkeys` terminal feature.
+
+*Windows / WSL (Windows Terminal).* Two things get in the way: Windows Terminal binds several of these chords by default (`Ctrl+Shift+D` duplicates the tab, `F` opens find, `P` the command palette, `N` a new window, `A` selects all), and version 1.24 cannot report Shift on Control chords at all (Kitty protocol support only arrives in 1.25). Work around both by making Windows Terminal send the CSI‑u sequences itself. In `settings.json` (`%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\`), add one action + keybinding pair per letter. The code is the letter's lowercase ASCII value: `a`=97, `b`=98, `d`=100, `e`=101, `f`=102, `n`=110, `p`=112.
+
+```jsonc
+"actions": [
+    { "command": { "action": "sendInput", "input": "\u001b[100;6u" }, "id": "User.EmacsCtrlShiftD" }
+    // ...same for a, b, e, f, n, p
+],
+"keybindings": [
+    { "id": "User.EmacsCtrlShiftD", "keys": "ctrl+shift+d" }
+    // ...
+]
+```
+
+Then add only these two lines to `~/.tmux.conf` inside WSL. Leave out the `extkeys` terminal feature: Windows Terminal cannot negotiate it, and the sequences already arrive pre-encoded.
+
+```tmux
+set -s extended-keys on
+set -s extended-keys-format csi-u
+```
+
+These chords no longer reach Windows Terminal's own actions. Outside Emacs (e.g. in a shell inside tmux) `Ctrl+Shift+D` behaves like `Ctrl+D`.
+
+*Troubleshooting.* Restart Emacs after changing the tmux config, because it requests extended keys only at startup. Then check `tmux list-panes -a -F '#{pane_current_command} #{pane_key_mode}'`: the Emacs pane must show `Ext 2`, not `VT10x`.
 
 ## 📦 Package roster (core)
 
