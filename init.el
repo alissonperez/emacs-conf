@@ -228,7 +228,33 @@
      ;; `backward-kill-word' is actually bound to -- is a separate step
      ;; that `global-kkp-mode' would normally do via its handshake, which
      ;; never completes under tmux (see comment above). Do it directly.
-     (kkp-setup-function-keys (frame-terminal)))))
+     (kkp-setup-function-keys (frame-terminal))
+
+     ;; Shifted punctuation arrives *unshifted*: the sequence carries the
+     ;; plain codepoint plus a Shift bit, so `C->' shows up as `C-S-.'.
+     ;; Kitty's encoding has a second field for the shifted character
+     ;; ("46:62"), which kkp does use -- but a terminal only sends it after
+     ;; the handshake asks for it, and that handshake never happens here.
+     ;;
+     ;; Letters are unaffected: `C-S-d' arrives as `C-S-D', and for those
+     ;; shift-translating an unbound chord down to its plain binding is
+     ;; exactly what we want (that is how C-S-f extends the region). For
+     ;; punctuation the same fallback is wrong -- `C-S-.' quietly becomes
+     ;; `C-.' (undefined) and `M-S-.' becomes `M-.' (`xref-find-definition'
+     ;; instead of `end-of-buffer'). So map each pair back to the character
+     ;; printed on the keycap. US layout; entries for chords the terminal
+     ;; never sends are harmless no-ops.
+     (pcase-dolist (`(,unshifted . ,shifted)
+                    '(("1" . "!") ("2" . "@") ("3" . "#") ("4" . "$")
+                      ("5" . "%") ("6" . "^") ("7" . "&") ("8" . "*")
+                      ("9" . "(") ("0" . ")") ("-" . "_") ("=" . "+")
+                      ("[" . "{") ("]" . "}") ("\\" . "|") (";" . ":")
+                      ("'" . "\"") ("," . "<") ("." . ">") ("/" . "?")
+                      ("`" . "~")))
+       (dolist (mod '("C-" "M-" "C-M-"))
+         (define-key key-translation-map
+                     (kbd (concat mod "S-" unshifted))
+                     (kbd (concat mod shifted))))))))
 
 ;;============================================================
 ;; Clipboard (terminal only, macOS)
