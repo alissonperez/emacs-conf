@@ -127,7 +127,7 @@
   ;; init), which non-login zsh does read.
   (setq exec-path-from-shell-arguments nil)
   (setq exec-path-from-shell-variables
-		'("PATH" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL" "SDKROOT"))
+	'("PATH" "NVM_DIR" "GPG_TTY" "SSH_AUTH_SOCK" "LANG" "LC_ALL" "SDKROOT"))
   (setq exec-path-from-shell-shell-name "zsh")
   (exec-path-from-shell-initialize))
 
@@ -229,6 +229,42 @@
      ;; that `global-kkp-mode' would normally do via its handshake, which
      ;; never completes under tmux (see comment above). Do it directly.
      (kkp-setup-function-keys (frame-terminal)))))
+
+;;============================================================
+;; Clipboard (terminal only, macOS)
+;;============================================================
+
+;; A TTY frame has no OS clipboard of its own -- C-w/M-w only fill
+;; Emacs's kill-ring. `~/.tmux.conf' binds a prefix-less C-y to a
+;; shell command that reads the real macOS pasteboard, not to Emacs's
+;; `yank' -- so the two ends need to meet through `pbcopy'/`pbpaste'
+;; rather than through tmux's own (unrelated) paste buffer.
+;;
+;; OSC 52 through tmux was tried first and dropped: getting it past
+;; tmux to the outer terminal requires DCS-wrapping the escape
+;; sequence (`allow-passthrough on'), but passthrough hands the bytes
+;; straight to the real terminal *instead of* tmux's own handling --
+;; it never lands back in a tmux paste buffer, only in Ghostty's
+;; clipboard. Since everything here is local (no SSH), shelling out to
+;; the pasteboard directly is simpler and actually reaches tmux.
+(defun my/pbcopy (text &optional _push)
+  "Send TEXT to the macOS pasteboard via pbcopy.
+Uses `call-process-region', which blocks until pbcopy exits, so the
+pasteboard is guaranteed to be updated before this returns. A prior
+`start-process' version sent the text asynchronously: nothing waited
+for pbcopy to actually finish, so an immediate `yank' would call
+`my/pbpaste' before the write landed and read back stale content."
+  (with-temp-buffer
+    (insert text)
+    (call-process-region (point-min) (point-max) "pbcopy")))
+
+(defun my/pbpaste ()
+  "Read the macOS pasteboard via pbpaste."
+  (shell-command-to-string "pbpaste"))
+
+(unless (display-graphic-p)
+  (setq interprogram-cut-function #'my/pbcopy)
+  (setq interprogram-paste-function #'my/pbpaste))
 
 ;;===========================================================
 ;; Git gutter
@@ -396,40 +432,40 @@
 (defun sl/make-header ()
   "Build the header-line string: abbreviated file path, truncated to fit the window."
   (let* ((sl/full-header (abbreviate-file-name buffer-file-name))
-		 (sl/header (file-name-directory sl/full-header))
-		 (sl/drop-str "[...]"))
+	 (sl/header (file-name-directory sl/full-header))
+	 (sl/drop-str "[...]"))
     (if (> (length sl/full-header)
-		   (window-body-width))
-		(if (> (length sl/header)
-			   (window-body-width))
-			(progn
-			  (concat (with-face sl/drop-str
-								 :background "blue"
-								 :weight 'bold
-								 )
-					  (with-face (substring sl/header
-											(+ (- (length sl/header)
-												  (window-body-width))
-											   (length sl/drop-str))
-											(length sl/header))
-								 ;; :background "red"
-								 :weight 'bold
-								 )))
-		  (concat (with-face sl/header
-							 ;; :background "red"
-							 :foreground "#8fb28f"
-							 :weight 'bold
-							 )))
+	   (window-body-width))
+	(if (> (length sl/header)
+	       (window-body-width))
+	    (progn
+	      (concat (with-face sl/drop-str
+				 :background "blue"
+				 :weight 'bold
+				 )
+		      (with-face (substring sl/header
+					    (+ (- (length sl/header)
+						  (window-body-width))
+					       (length sl/drop-str))
+					    (length sl/header))
+				 ;; :background "red"
+				 :weight 'bold
+				 )))
 	  (concat (with-face sl/header
-						 ;; :background "green"
-						 ;; :foreground "black"
-						 :weight 'bold
-						 :foreground "#8fb28f"
-						 )
-			  (with-face (file-name-nondirectory buffer-file-name)
-						 :weight 'bold
-						 ;; :background "red"
-						 )))))
+			     ;; :background "red"
+			     :foreground "#8fb28f"
+			     :weight 'bold
+			     )))
+      (concat (with-face sl/header
+			 ;; :background "green"
+			 ;; :foreground "black"
+			 :weight 'bold
+			 :foreground "#8fb28f"
+			 )
+	      (with-face (file-name-nondirectory buffer-file-name)
+			 :weight 'bold
+			 ;; :background "red"
+			 )))))
 
 ;; Set header-line-format once via the default value. The :eval form is
 ;; re-run by redisplay automatically, so we don't need a hook to recompute it.
@@ -498,9 +534,9 @@
 (use-package company
   :diminish company-mode
   :bind (:map company-active-map
-			  ;; "<tab>" only exists in GUI frames; "TAB" covers emacs -nw too.
-			  ("<tab>" . company-complete-selection)
-			  ("TAB" . company-complete-selection))
+	      ;; "<tab>" only exists in GUI frames; "TAB" covers emacs -nw too.
+	      ("<tab>" . company-complete-selection)
+	      ("TAB" . company-complete-selection))
   :hook (after-init . global-company-mode)
   :config
   (setq company-idle-delay 0.1
